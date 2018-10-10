@@ -6,9 +6,9 @@
 #include <codecvt>
 
 
-const int RUS_FIRST_BITE_1 = -47;
-const int RUS_FIRST_BITE_2 = -48;
-const int RUS_MAX_SECOND_BITE = -65;
+const int RUS_FIRST_BYTE_1 = -47;
+const int RUS_FIRST_BYTE_2 = -48;
+const int RUS_MAX_SECOND_BYTE = -65;
 
 
 enum format
