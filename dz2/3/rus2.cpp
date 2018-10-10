@@ -7,8 +7,6 @@
 #include <wchar.h>
 
 
-
-
 int main()
 {
 	setlocale(LC_CTYPE,"");

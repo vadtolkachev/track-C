@@ -1,2 +1,10 @@
 dz2/res.txt
-dz2/a.out
+a.out
+html
+cov.info
+covinfo
+*gcda
+*gcno
+valgrind_info.log
+*.o
+*.out

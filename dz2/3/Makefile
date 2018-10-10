@@ -1,5 +1,7 @@
-all:
-	g++ rus.cpp -Wall -Wextra
+all: build
+
+build:
+	g++ rus3.cpp -Wall -Wextra
 
 mem:
 	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all --log-file=valgrind_info.log ./a.out

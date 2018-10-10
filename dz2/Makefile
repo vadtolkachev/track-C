@@ -1,7 +1,7 @@
 all: build cov dox
 
 build:
-	g++ -fprofile-arcs -ftest-coverage dz2.1.cpp -Wall -Wextra
+	g++ -fprofile-arcs -ftest-coverage dz2.2.cpp -Wall -Wextra
 
 cov:
 	valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all --log-file=valgrind_info.log ./a.out
@@ -15,5 +15,5 @@ cleanCov:
 	rm -rf *gcda *.info covinfo 
 
 clean: cleanCov
-	rm -rf valgrind_info.log a.out html *gcno 
+	rm -rf valgrind_info.log a.out html *gcno res.txt
 

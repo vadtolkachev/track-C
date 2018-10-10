@@ -3,8 +3,12 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <cstring>
-//#include <locale>
-//#include <wchar.h>
+#include <codecvt>
+
+
+const int RUS_FIRST_BITE_1 = -47;
+const int RUS_FIRST_BITE_2 = -48;
+const int RUS_MAX_SECOND_BITE = -65;
 
 
 enum format
@@ -12,6 +16,14 @@ enum format
 	WITH_SLASHN,
 	NO_SLASHN
 };
+
+
+void exitErr(const char *s)
+{
+	printf("error: %s\n", s);
+	exit(EXIT_FAILURE);
+}
+
 
 
 char **readText(FILE *file, int *nStrings)
@@ -22,7 +34,7 @@ char **readText(FILE *file, int *nStrings)
 	long int size = tmp.st_size;
 
 	char *bigString = (char *)calloc(size + 1, sizeof(char));
-	if(errno != 0)
+	if((errno != 0) || bigString == nullptr)
 	{
 		perror("Memory cannot be allocated");
 		exit(EXIT_FAILURE);
@@ -77,22 +89,22 @@ char **readText(FILE *file, int *nStrings)
 
 void writeText(char **text, FILE *res, int nStrings, format form)
 {
-	char c[1];
+	char c[2] = "";
 	c[0] = '\n';
 	c[1] = 0;
-	int s = 0;
+	int checkErr = 0;
 	for(int i = 0; i < nStrings; i++)
 	{	
-		s = fwrite(text[i], strlen(text[i]), 1, res);
-		if((s != 1) && (text[i][0] != 0))
+		checkErr = fwrite(text[i], strlen(text[i]), 1, res);
+		if((checkErr != 1) && (text[i][0] != 0))
 		{
 			printf("writing error\n");
 			exit(EXIT_FAILURE);
 		}
 		if((form == WITH_SLASHN) || (text[i][0] != 0))
 		{	
-			s = fwrite(c, 1, 1, res);
-			if(s != 1)
+			checkErr = fwrite(c, 1, 1, res);
+			if(checkErr != 1)
 			{
 				printf("writing error\n");
 				exit(EXIT_FAILURE);
@@ -102,24 +114,136 @@ void writeText(char **text, FILE *res, int nStrings, format form)
 }
 
 
-
-bool isLetter(char a)
+bool isRusLetter(char a, char b)
 {
-	if(a > 0)
+	if((b > RUS_MAX_SECOND_BITE) || ((a != RUS_FIRST_BITE_1) && (a != RUS_FIRST_BITE_2)))
+	{
+		return false;
+	}
+
+	return true; 
+}
+
+
+bool isEngLetter(char a)
+{
+	if((a < 'A') || ((a > 'Z') && (a < 'a')) || (a > 'z'))
 		return false;
 
 	return true; 
 }
 
 
+
+bool isLetter(char a, char b)
+{	
+	if(!isRusLetter(a, b) && !isEngLetter(a))
+		return false;
+
+	return true; 
+}
+
+
+int getRusNumb(char a1, char a2)
+{
+	if(!isRusLetter(a1, a2))
+		exitErr("getRusNumb");
+
+	int n = 0;
+	if(a1 == -47)
+		n = 64;
+
+	n += a2 + 113;
+	
+	//Чтобы номер заглавных букв был равен номеру строчных букв
+	if(n > 32)
+		n -= 32;
+
+	//ё
+	if(n > 6)
+		n++;
+	
+	//ё
+	if((n == 35) || (n == -14))
+		n = 7;
+
+	return n;
+}
+
+
+int getEngNumb(char a)
+{
+	if(!isEngLetter(a))
+		exitErr("cmpEng");
+
+	int n = a - 64;
+	if(n > 32)
+		n -= 32;
+
+	return n;
+}
+
+
+char *findFirstLetter(char *str)
+{
+	int len = strlen(str);
+	for(int i = 0; i < len; i++)
+	{
+		if(isLetter(str[i], str[i+1]))
+			return &str[i];
+	}
+	
+	return &str[len];
+}
+
+
+int findLastLetter(char *str)
+{
+	int len = strlen(str);
+	for(int i = len - 1; i >= 0; i--)
+	{
+		if(isLetter(str[i], str[i+1]))
+			return i + 1;
+	}
+	
+	return 0;
+}
+
+
 int strcmpl(char *st1, char* st2)
 {
+	if(st1[0] == 0)
+	{
+		if(st2[0] == 0)
+			return 0;
+		return -1;	
+	}
 
-	if(!isLetter(st1[0]))
-		return strcmpl(&st1[1], st2);
+	if(st2[0] == 0)
+		return 1;
 
-	if(!isLetter(st2[0]))
-		return strcmpl(st1, &st2[1]);
+	if((isRusLetter(st1[0], st1[1])) && (isRusLetter(st2[0], st2[1])))
+	{
+		if(getRusNumb(st1[0], st1[1]) > getRusNumb(st2[0], st2[1]))
+			return 1;
+
+		if(getRusNumb(st1[0], st1[1]) < getRusNumb(st2[0], st2[1]))
+			return -1;
+
+		return strcmpl(&st1[2], &st2[2]);
+	}
+
+
+	if((isEngLetter(st1[0])) && (isEngLetter(st2[0])))
+	{
+		if(getEngNumb(st1[0]) > getEngNumb(st2[0]))
+			return 1;
+
+		if(getEngNumb(st1[0]) < getEngNumb(st2[0]))
+			return -1;
+
+		return strcmpl(&st1[1], &st2[1]);
+	}
 	
 	if(st1[0] > st2[0])
 		return 1;
@@ -127,18 +251,22 @@ int strcmpl(char *st1, char* st2)
 	if(st1[0] < st2[0])
 		return -1;
 
-
 	if(st1[0] == 0)
 		return 0;
 
 	return strcmpl(&st1[1], &st2[1]);
+}
 
+
+int fstrcmpl(char *st1, char* st2)
+{
+	return strcmpl(findFirstLetter(st1), findFirstLetter(st2));	
 }
 
 
 int strcmpr(char *st1, char* st2, int len1, int len2)
 {
-	//len = 0
+	//пустая строка
 	if(len1 == 0)
 	{
 		if(len2 == 0)
@@ -148,34 +276,50 @@ int strcmpr(char *st1, char* st2, int len1, int len2)
 
 	if(len2 == 0)
 		return 1;	
-
-	//не буква
-	if(!isLetter(st1[len1 - 1]))
-		return strcmpr(st1, st2, len1 - 1, len2);
-
-	if(!isLetter(st2[len2 - 1]))
-		return strcmpr(st1, st2, len1, len2 - 1);
 	
-	//сравнение
+	
+	if((isRusLetter(st1[len1-2], st1[len1-1])) && (isRusLetter(st2[len2-2], st2[len2-1])))
+	{
+		if(getRusNumb(st1[len1-2], st1[len1-1]) > getRusNumb(st2[len2-2], st2[len2-1]))
+			return 1;
+
+		if(getRusNumb(st1[len1-2], st1[len1-1]) < getRusNumb(st2[len2-2], st2[len2-1]))
+			return -1;
+
+		return strcmpr(st1, st2, len1-2, len2-2);
+	}
+
+
+	if((isEngLetter(st1[len1-1])) && (isEngLetter(st2[len2-1])))
+	{
+		if(getEngNumb(st1[len1-1]) > getEngNumb(st2[len2-1]))
+			return 1;
+
+		if(getEngNumb(st1[len1-1]) < getEngNumb(st2[len2-1]))
+			return -1;
+
+		return strcmpr(st1, st2, len1-1, len2-1);
+	}		
+
 	if(st1[len1 - 1] > st2[len2 - 1])
 	{
-		if((st1[len1 - 1] > -81) && (st2[len2 - 1] < -81))
-			return -1;
-		
 		return 1;
 	}
 
 	
 	if(st1[len1 - 1] < st2[len2 - 1])
 	{
-		if((st1[len1 - 1] < -81) && (st2[len2 - 1] > -81))
-			return 1;
-
 		return -1;
 	}
-	//если равны
+
 	return strcmpr(st1, st2, len1 - 1, len2 - 1);
 
+}
+
+
+int fstrcmpr(char *st1, char* st2)
+{
+	return strcmpr(st1, st2, findLastLetter(st1), findLastLetter(st2));
 }
 
 
@@ -184,7 +328,7 @@ int leftCmp(const void *a, const void *b)
 	char *st1 = *(char **)a;
 	char *st2 = *(char **)b;
 	
-	return strcmpl(st1, st2);
+	return fstrcmpl(st1, st2);
 }
 
 
@@ -218,7 +362,7 @@ void memfree(char **text, char *bigString)
 
 int main()
 {
-	FILE *file = fopen("onegin.txt", "r");
+	FILE *file = fopen("2.txt", "r");
 	if(errno != 0)
 	{
 		fprintf(stderr, "failed to open file\n");
@@ -237,7 +381,7 @@ int main()
 	char *bigString = text[0]; 
 	writeText(text, res, nStrings, WITH_SLASHN);
 	
-	char ns[2];
+	char ns[3] = "";
 	ns[0] = '\n';
 	ns[1] = '\n';
 	ns[2] = '\0';
@@ -249,7 +393,7 @@ int main()
 	fwrite(ns, 2, 1, res);
 	rightSort(text, nStrings);
 	writeText(text, res, nStrings, NO_SLASHN);
-	
+		
 
 	fclose(file);
 	if(errno != 0)
@@ -263,7 +407,8 @@ int main()
 	{
 		fprintf(stderr, "res fclose() failed\n");
 	}
-	
+
 	memfree(text, bigString);
+
 	return 0;
 }
