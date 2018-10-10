@@ -116,7 +116,7 @@ void writeText(char **text, FILE *res, int nStrings, format form)
 
 bool isRusLetter(char a, char b)
 {
-	if((b > RUS_MAX_SECOND_BITE) || ((a != RUS_FIRST_BITE_1) && (a != RUS_FIRST_BITE_2)))
+	if((b > RUS_MAX_SECOND_BYTE) || ((a != RUS_FIRST_BYTE_1) && (a != RUS_FIRST_BYTE_2)))
 	{
 		return false;
 	}
