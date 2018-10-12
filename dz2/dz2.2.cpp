@@ -3,12 +3,20 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <cstring>
-#include <codecvt>
 
 
 const int RUS_FIRST_BYTE_1 = -47;
 const int RUS_FIRST_BYTE_2 = -48;
 const int RUS_MAX_SECOND_BYTE = -65;
+const int SIZE_OF_RUS = 33;
+const int SIZE_OF_ENG = 26;
+const int NUMB_OF_YO = 7;
+const int ASCII_NUMB_OF_YO_1 = RUS_FIRST_BYTE_1;
+const int ASCII_NUMB_OF_YO_2 = -111;
+const int ASCII_NUMB_OF_BIG_YO_1 = RUS_FIRST_BYTE_2;
+const int ASCII_NUMB_OF_BIG_YO_2 = -127;
+const int ASCII_NUMB_OF_RUS_A = -80; 
+const int ASCII_NUMB_OF_ENG_A = 65;
 
 
 enum format
@@ -25,29 +33,8 @@ void exitErr(const char *s)
 }
 
 
-
-char **readText(FILE *file, int *nStrings)
+int calcNumbOfStr(char *bigString)
 {
-	//----------reading-----------
-	struct stat tmp;
-	fstat(fileno(file), &tmp);
-	long int size = tmp.st_size;
-
-	char *bigString = (char *)calloc(size + 1, sizeof(char));
-	if((errno != 0) || bigString == nullptr)
-	{
-		perror("Memory cannot be allocated");
-		exit(EXIT_FAILURE);
-	}
-	
-	if(fread(bigString, size, 1, file) != 1)
-	{
-		printf("reading error\n");	
-		exit(EXIT_FAILURE);
-	}
-	
-
-	//-----calculating number of strings-----
 	int i = 0;
 	int nStr = 1;	
 	while(bigString[i] != 0)
@@ -55,23 +42,38 @@ char **readText(FILE *file, int *nStrings)
 		if(bigString[i] == '\n')
 			nStr++;
 		i++;
-	}	
-
-	if(nStrings)
-		*nStrings = nStr;
+	}
 	
+	return nStr;
+}
 
-	//------big string -> pointer array------
+
+char *readText(FILE *file)
+{
+	struct stat tmp;
+	fstat(fileno(file), &tmp);
+	long int size = tmp.st_size;
+
+	char *bigString = (char *)calloc(size + 1, sizeof(char));
+	if((errno != 0) || bigString == nullptr)
+		exitErr("Memory cannot be allocated");
+	
+	if(fread(bigString, size, 1, file) != 1)
+		exitErr("reading error");
+
+	return bigString;
+}
+
+
+char **formatText(char *bigString, int nStr)
+{
 	char **text = (char **)calloc(nStr, sizeof(char *));
 	if(errno != 0)
-	{
-		perror("Memory cannot be allocated");
-		exit(EXIT_FAILURE);
-	}
+		exitErr("Memory cannot be allocated");
 
 	text[0] = bigString;
 	int n = 1;
-	i = 0;
+	int i = 0;
 	while(bigString[i] != 0)
 	{
 		if(bigString[i] == '\n')
@@ -87,29 +89,31 @@ char **readText(FILE *file, int *nStrings)
 }
 
 
+char **getText(FILE *file, int *nStrings)
+{
+	char *bigString = readText(file);
+
+	int nStr = calcNumbOfStr(bigString);
+	if(nStrings)
+		*nStrings = nStr;
+		
+	char **text = formatText(bigString, nStr);
+
+	return text;
+}
+
+
 void writeText(char **text, FILE *res, int nStrings, format form)
 {
-	char c[2] = "";
-	c[0] = '\n';
-	c[1] = 0;
 	int checkErr = 0;
 	for(int i = 0; i < nStrings; i++)
 	{	
 		checkErr = fwrite(text[i], strlen(text[i]), 1, res);
 		if((checkErr != 1) && (text[i][0] != 0))
-		{
-			printf("writing error\n");
-			exit(EXIT_FAILURE);
-		}
+			exitErr("writing error");
+
 		if((form == WITH_SLASHN) || (text[i][0] != 0))
-		{	
-			checkErr = fwrite(c, 1, 1, res);
-			if(checkErr != 1)
-			{
-				printf("writing error\n");
-				exit(EXIT_FAILURE);
-			}
-		}
+			fprintf(res, "\n");
 	}
 }
 
@@ -149,23 +153,23 @@ int getRusNumb(char a1, char a2)
 	if(!isRusLetter(a1, a2))
 		exitErr("getRusNumb");
 
+	if(((a1 == ASCII_NUMB_OF_YO_1) && (a2 == ASCII_NUMB_OF_YO_2)) || 
+	((a1 == ASCII_NUMB_OF_BIG_YO_1) && (a2 == ASCII_NUMB_OF_BIG_YO_2)))
+		return NUMB_OF_YO;
+
 	int n = 0;
-	if(a1 == -47)
-		n = 64;
+	if(a1 == RUS_FIRST_BYTE_1)
+		n = -(RUS_MAX_SECOND_BYTE + 1);
 
-	n += a2 + 113;
+	n += a2 + (-ASCII_NUMB_OF_RUS_A) + SIZE_OF_RUS;
 	
-	//Чтобы номер заглавных букв был равен номеру строчных букв
-	if(n > 32)
-		n -= 32;
+	//getRusNumb(a) = getRusNumb(A)
+	if(n >= SIZE_OF_RUS )
+		n -= SIZE_OF_RUS - 1;
 
-	//ё
-	if(n > 6)
+	//for yo
+	if(n >= NUMB_OF_YO)
 		n++;
-	
-	//ё
-	if((n == 35) || (n == -14))
-		n = 7;
 
 	return n;
 }
@@ -176,9 +180,9 @@ int getEngNumb(char a)
 	if(!isEngLetter(a))
 		exitErr("cmpEng");
 
-	int n = a - 64;
-	if(n > 32)
-		n -= 32;
+	int n = a - ASCII_NUMB_OF_ENG_A + 1;
+	if(n > SIZE_OF_ENG)
+		n -= SIZE_OF_ENG;
 
 	return n;
 }
@@ -266,7 +270,6 @@ int fstrcmpl(char *st1, char* st2)
 
 int strcmpr(char *st1, char* st2, int len1, int len2)
 {
-	//пустая строка
 	if(len1 == 0)
 	{
 		if(len2 == 0)
@@ -362,51 +365,34 @@ void memfree(char **text, char *bigString)
 
 int main()
 {
-	FILE *file = fopen("2.txt", "r");
+	FILE *file = fopen("text/2.txt", "r");
 	if(errno != 0)
-	{
-		fprintf(stderr, "failed to open file\n");
-		exit(EXIT_FAILURE);
-	}
+		exitErr("failed to open file");
 	
 	FILE *res = fopen("res.txt", "w");
 	if(errno != 0)
-	{
-		fprintf(stderr, "failed to open res\n");
-		exit(EXIT_FAILURE);
-	}
+		exitErr("failed to open res");
 	
 	int nStrings;
-	char **text = readText(file, &nStrings);
+	char **text = getText(file, &nStrings);
 	char *bigString = text[0]; 
 	writeText(text, res, nStrings, WITH_SLASHN);
-	
-	char ns[3] = "";
-	ns[0] = '\n';
-	ns[1] = '\n';
-	ns[2] = '\0';
 
-	fwrite(ns, 2, 1, res);
+	fprintf(res, "\n\n");
 	leftSort(text, nStrings);
 	writeText(text, res, nStrings, NO_SLASHN);
 
-	fwrite(ns, 2, 1, res);
+	fprintf(res, "\n\n");
 	rightSort(text, nStrings);
-	writeText(text, res, nStrings, NO_SLASHN);
-		
+	writeText(text, res, nStrings, NO_SLASHN);	
 
 	fclose(file);
 	if(errno != 0)
-	{
-		fprintf(stderr, "file fclose() failed\n");
-		exit(EXIT_FAILURE);		
-	}
+		exitErr("file fclose() failed");
 
 	fclose(res);
 	if(errno != 0)
-	{
-		fprintf(stderr, "res fclose() failed\n");
-	}
+		exitErr("res fclose() failed");
 
 	memfree(text, bigString);
 

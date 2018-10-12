@@ -5,6 +5,18 @@
 #include <cstring>
 
 
+const int RUS_FIRST_BYTE_1 = -47;
+const int RUS_FIRST_BYTE_2 = -48;
+const int RUS_MAX_SECOND_BYTE = -65;
+const int SIZE_OF_RUS = 33;
+const int NUMB_OF_YO = 7;
+const int ASCII_NUMB_OF_YO_1 = RUS_FIRST_BYTE_1;
+const int ASCII_NUMB_OF_YO_2 = -111;
+const int ASCII_NUMB_OF_BIG_YO_1 = RUS_FIRST_BYTE_2;
+const int ASCII_NUMB_OF_BIG_YO_2 = -127;
+const int ASCII_NUMB_OF_RUS_A = -80; 
+
+
 void exitErr(const char *s)
 {
 	printf("error: %s\n", s);
@@ -22,9 +34,10 @@ bool isRusLetter(char a, char b)
 	return true; 
 }
 
-
+/*
 int getRusNumb(char a1, char a2)
 {
+	
 	if(!isRusLetter(a1, a2))
 		exitErr("getRusNumb");
 
@@ -42,6 +55,34 @@ int getRusNumb(char a1, char a2)
 	
 	if((n == 35) || (n == -14))
 		n = 7;
+
+	return n;
+}
+*/
+
+
+int getRusNumb(char a1, char a2)
+{
+	if(!isRusLetter(a1, a2))
+		exitErr("getRusNumb");
+
+	if(((a1 == ASCII_NUMB_OF_YO_1) && (a2 == ASCII_NUMB_OF_YO_2)) || 
+	((a1 == ASCII_NUMB_OF_BIG_YO_1) && (a2 == ASCII_NUMB_OF_BIG_YO_2)))
+		return NUMB_OF_YO;
+
+	int n = 0;
+	if(a1 == RUS_FIRST_BYTE_1)
+		n = -(RUS_MAX_SECOND_BYTE + 1);
+
+	n += a2 + (-ASCII_NUMB_OF_RUS_A) + SIZE_OF_RUS;
+	
+	//Чтобы номер заглавных букв был равен номеру строчных букв
+	if(n >= SIZE_OF_RUS )
+		n -= SIZE_OF_RUS - 1;
+
+	//ё
+	if(n >= NUMB_OF_YO)
+		n++;
 
 	return n;
 }
