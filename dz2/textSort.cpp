@@ -1,29 +1,4 @@
-#include <stdio.h>
-#include <sys/stat.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <cstring>
-
-
-const int RUS_FIRST_BYTE_1 = -47;
-const int RUS_FIRST_BYTE_2 = -48;
-const int RUS_MAX_SECOND_BYTE = -65;
-const int SIZE_OF_RUS = 33;
-const int SIZE_OF_ENG = 26;
-const int NUMB_OF_YO = 7;
-const int ASCII_NUMB_OF_YO_1 = RUS_FIRST_BYTE_1;
-const int ASCII_NUMB_OF_YO_2 = -111;
-const int ASCII_NUMB_OF_BIG_YO_1 = RUS_FIRST_BYTE_2;
-const int ASCII_NUMB_OF_BIG_YO_2 = -127;
-const int ASCII_NUMB_OF_RUS_A = -80; 
-const int ASCII_NUMB_OF_ENG_A = 65;
-
-
-enum format
-{
-	WITH_SLASHN,
-	NO_SLASHN
-};
+#include "textSort.hpp"
 
 
 void exitErr(const char *s)
@@ -360,41 +335,4 @@ void memfree(char **text, char *bigString)
 {
 	free(bigString);
 	free(text);
-}
-
-
-int main()
-{
-	FILE *file = fopen("text/2.txt", "r");
-	if(errno != 0)
-		exitErr("failed to open file");
-	
-	FILE *res = fopen("res.txt", "w");
-	if(errno != 0)
-		exitErr("failed to open res");
-	
-	int nStrings;
-	char **text = getText(file, &nStrings);
-	char *bigString = text[0]; 
-	writeText(text, res, nStrings, WITH_SLASHN);
-
-	fprintf(res, "\n\n");
-	leftSort(text, nStrings);
-	writeText(text, res, nStrings, NO_SLASHN);
-
-	fprintf(res, "\n\n");
-	rightSort(text, nStrings);
-	writeText(text, res, nStrings, NO_SLASHN);	
-
-	fclose(file);
-	if(errno != 0)
-		exitErr("file fclose() failed");
-
-	fclose(res);
-	if(errno != 0)
-		exitErr("res fclose() failed");
-
-	memfree(text, bigString);
-
-	return 0;
 }

@@ -7,7 +7,7 @@ all: build
 build: $(PROG_OBJS)
 	$(CC) $(CFLAGS) -o a.out $(PROG_OBJS)
 
-%.o: %.cpp
+%.o: %.c
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 clean:
