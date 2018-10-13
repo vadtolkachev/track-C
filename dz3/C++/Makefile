@@ -1,14 +1,14 @@
-PROG_OBJS=test.o stack.o
-CC=gcc
+PROG_OBJS=test.o MyStack.o MyElement.o
+CC=g++
 CFLAGS=-fprofile-arcs -ftest-coverage -Wall -Wextra
 VFLAGS=--tool=memcheck --leak-check=full --show-leak-kinds=all --log-file=valgrind_info.log
 
-all: build val cov
+all: build 
 
 build: $(PROG_OBJS)
 	$(CC) $(CFLAGS) -o a.out $(PROG_OBJS)
 
-%.o: %.c
+%.o: %.cpp
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 val:
