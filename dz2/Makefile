@@ -12,7 +12,7 @@ build: $(PROG_OBJS)
 %.o: %.cpp
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-cov:
+cov: 
 	valgrind $(VFLAGS) ./a.out
 	lcov --capture --directory . --output-file cov.info
 	genhtml cov.info --output-directory covinfo
