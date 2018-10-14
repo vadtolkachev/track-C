@@ -14,7 +14,8 @@ const char NORM[5] = "\033[0m";
 	auto result = (what);						\
 	auto comp = (ref);						\
 									\
-	std::cout << WHITE << __FILE__":" << __LINE__ << ": " << NORM;	\
+	std::cout << WHITE << __FILE__":" << __LINE__ << ": " 		\
+		<< __PRETTY_FUNCTION__ << ": " << NORM;			\
 	if(result op comp)						\
 		std::cout << #what << GREEN << " [passed]\n" << NORM;	\
 	else								\
