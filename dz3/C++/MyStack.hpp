@@ -10,9 +10,13 @@ public:
 	~MyStack();
 
 	MyElement *getHead() const;
+	data_t getTop() const;
+
 	int getCapacity() const;
 	int push(data_t data);
-	int pop();	
+	int pop();
+
+	bool isEmpty() const;
 	
 private:
 	MyElement *m_head;

@@ -11,9 +11,6 @@ public:
 	data_t getData() const;
 	MyElement *getNext() const;
 	
-	void setData(data_t data);
-	void setNext(MyElement *next);
-	
 private:
 	data_t m_data;
 	MyElement *m_next;

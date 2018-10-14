@@ -21,6 +21,12 @@ MyElement *MyStack::getHead() const
 }
 
 
+data_t MyStack::getTop() const
+{
+	return getHead()->getData();
+}
+
+
 int MyStack::getCapacity() const
 {
 	return m_capacity;
@@ -51,4 +57,13 @@ int MyStack::pop()
 	m_capacity--;	
 	
 	return 1;
+}
+
+
+bool MyStack::isEmpty() const
+{
+	if(getCapacity())
+		return true;
+
+	return false;
 }
