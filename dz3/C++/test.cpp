@@ -30,14 +30,21 @@ int main()
 	data_t data = 0;	
 	
 	UNITTEST(stack.isEmpty(), !=, false); //test for UNITTEST
+
 	UNITTEST(stack.pop(), ==, 0);
 	UNITTEST(stack.getTop(&data), ==, 0);
 	UNITTEST(stack.getTop(nullptr), ==, -1);
+
 	UNITTEST(stack.push(6), ==, 1);	
 	UNITTEST(stack.getCapacity(), == , 1);	
+	UNITTEST(stack.getTop(&data), ==, 1);
+	UNITTEST(data, ==, 6);
+
 	UNITTEST(stack.push(7), ==, 1);
 	UNITTEST(stack.getCapacity(), == , 2);	
 	UNITTEST(stack.getTop(&data), ==, 1);
+	UNITTEST(data, ==, 7);
+
 	UNITTEST(stack.push(7), ==, 1);
 	UNITTEST(stack.pop(), ==, 1);
 	UNITTEST(stack.isEmpty(), !=, false);		
