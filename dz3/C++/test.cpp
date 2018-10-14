@@ -1,6 +1,5 @@
 #include "MyStack.hpp"
 #include <iostream>
-#include <cstring>
 
 
 const char GREEN[8] = "\033[1;32m";
