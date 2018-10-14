@@ -22,6 +22,6 @@ typedef struct stack
 
 
 int stackCtor(stack *stack);
-int stackFree(stack *stack);
+int stackDtor(stack *stack);
 int stackPush(stack *stack, data_t data);
 int stackPop(stack *stack);

@@ -11,7 +11,7 @@ int main()
 	printf("head = %d\n", stack.head->data);
 	stackPop(&stack);
 	printf("head = %d\n", stack.head->data);
-	stackFree(&stack);
+	stackDtor(&stack);
 
 	printf("hello there\n");
 	return 0;

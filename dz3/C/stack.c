@@ -13,7 +13,7 @@ int stackCtor(stack *stack)
 }
 
 
-int stackFree(stack *stack)
+int stackDtor(stack *stack)
 {
 	if(stack == NULL)
 		return -1;
