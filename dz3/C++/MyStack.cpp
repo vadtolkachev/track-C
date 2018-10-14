@@ -21,9 +21,16 @@ MyElement *MyStack::getHead() const
 }
 
 
-data_t MyStack::getTop() const
+int MyStack::getTop(data_t *res) const
 {
-	return getHead()->getData();
+	if(res == nullptr)
+		return -1;
+	
+	if(getHead() == nullptr)
+		return 0;
+
+	*res = getHead()->getData();
+	return 1;
 }
 
 
