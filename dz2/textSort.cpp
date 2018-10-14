@@ -93,9 +93,9 @@ void writeText(char **text, FILE *res, int nStrings, format form)
 }
 
 
-bool isRusLetter(char a, char b)
+bool isRusLetter(char a1, char a2)
 {
-	if((b > RUS_MAX_SECOND_BYTE) || ((a != RUS_FIRST_BYTE_1) && (a != RUS_FIRST_BYTE_2)))
+	if((a2 > RUS_MAX_SECOND_BYTE) || ((a1 != RUS_FIRST_BYTE_1) && (a1 != RUS_FIRST_BYTE_2)))
 	{
 		return false;
 	}
@@ -136,7 +136,7 @@ int getRusNumb(char a1, char a2)
 	if(a1 == RUS_FIRST_BYTE_1)
 		n = -(RUS_MAX_SECOND_BYTE + 1);
 
-	n += a2 + (-ASCII_NUMB_OF_RUS_A) + SIZE_OF_RUS;
+	n += a2 - ASCII_NUMB_OF_RUS_A + SIZE_OF_RUS;
 	
 	//getRusNumb(a) = getRusNumb(A)
 	if(n >= SIZE_OF_RUS )
