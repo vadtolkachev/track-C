@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "stack.h"
 
 
@@ -45,17 +44,21 @@ int main()
 	stack stack;
 	stackCtor(&stack);
 
+	double a = 2, b = 3;
+	UNITTEST(a, ==, b, double); //test for UNITTEST
 	UNITTEST(stack.count, !=, 0, int); //test for UNITTEST
 
+	UNITTEST(stackCtor(NULL), ==, -1, int);
+	UNITTEST(stackDtor(NULL), ==, -1, int);
+	UNITTEST(stackPush(NULL, 1), ==, -1, int);
+	UNITTEST(stackPop(NULL), ==, -1, int);
+	UNITTEST(stackDtor(&stack), ==, 0, int);
 	UNITTEST(stackPop(&stack), ==, 0, int);
 	UNITTEST(stackPush(&stack, 7), ==, 1, int);
 	UNITTEST(stack.count, ==, 1, int);
 	UNITTEST(stack.head->data, ==, 7, int);
 
 	stackDtor(&stack);
-
-	double a = 2, b = 3;
-	UNITTEST(2, <, 3, double);
 
 	return 0;
 }
