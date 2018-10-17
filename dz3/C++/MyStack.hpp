@@ -3,6 +3,12 @@
 #include <new>
 
 
+const int ALLOC_ERR = -2;
+const int NULLPTR_ERR = -1;
+const int EMPTY_ERR = 0;
+const int SUCCESS = 1;
+
+
 class MyStack
 {
 public:

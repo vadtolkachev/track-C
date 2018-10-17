@@ -24,13 +24,13 @@ MyElement *MyStack::getHead() const
 int MyStack::getTop(data_t *res) const
 {
 	if(res == nullptr)
-		return -1;
+		return NULLPTR_ERR;
 	
 	if(getHead() == nullptr)
-		return 0;
+		return EMPTY_ERR;
 
 	*res = getHead()->getData();
-	return 1;
+	return SUCCESS;
 }
 
 
@@ -44,26 +44,26 @@ int MyStack::push(data_t data)
 {
 	MyElement *element = new (std::nothrow) MyElement(data, m_head);
 	if(!element)
-		return -1;
+		return ALLOC_ERR;
 	
 	m_head = element;
 	m_capacity++;
 	
-	return 1;
+	return SUCCESS;
 }
 
 
 int MyStack::pop()
 {
 	if(m_capacity == 0)
-		return 0;
+		return EMPTY_ERR;
 
 	MyElement *tmp = m_head; 
 	m_head = tmp->getNext();
 	delete tmp;
 	m_capacity--;	
 	
-	return 1;
+	return SUCCESS;
 }
 
 
