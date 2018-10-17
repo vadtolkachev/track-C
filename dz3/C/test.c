@@ -34,6 +34,12 @@ int print_int(int n)
 }
 
 
+int print_double(double d)
+{
+	return printf("%lg", d);
+}
+
+
 int main()
 {
 	stack stack;
@@ -44,8 +50,12 @@ int main()
 	UNITTEST(stackPop(&stack), ==, 0, int);
 	UNITTEST(stackPush(&stack, 7), ==, 1, int);
 	UNITTEST(stack.count, ==, 1, int);
+	UNITTEST(stack.head->data, ==, 7, int);
 
 	stackDtor(&stack);
+
+	double a = 2, b = 3;
+	UNITTEST(2, <, 3, double);
 
 	return 0;
 }
