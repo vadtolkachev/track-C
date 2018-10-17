@@ -2,10 +2,10 @@
 #include <iostream>
 
 
-const char GREEN[8] = "\033[1;32m";
-const char RED[8] = "\033[1;31m";
-const char WHITE[8] = "\033[1;37m";
-const char NORM[5] = "\033[0m";
+const char GREEN[] = "\033[1;32m";
+const char RED[] = "\033[1;31m";
+const char WHITE[] = "\033[1;37m";
+const char NORM[] = "\033[0m";
 
 
 #define UNITTEST(what,op,ref)						\
