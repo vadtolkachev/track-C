@@ -1,26 +1,9 @@
-PROG_OBJS=test.o stack.o
+PROG_OBJS=test.c stack.c
 CC=gcc
-CFLAGS=-fprofile-arcs -ftest-coverage -Wall -Wextra
-VFLAGS=--tool=memcheck --leak-check=full --show-leak-kinds=all --log-file=valgrind_info.log
+CFLAGS=-Wall -Wextra
 
-all: build val cov
+all: 
+	$(CC) $(PROG_OBJS) $(CFLAGS) 
 
-build: $(PROG_OBJS)
-	$(CC) $(CFLAGS) -o a.out $(PROG_OBJS)
-
-%.o: %.c
-	$(CC) $(CFLAGS) -o $@ -c $<
-
-val:
-	valgrind $(VFLAGS) ./a.out
-
-cov:
-	lcov --capture --directory . --output-file cov.info
-	genhtml cov.info --output-directory covinfo
-
-
-cleanCov:
-	rm -rf *gcda *.info covinfo 
-
-clean: cleanCov
-	rm -rf a.out *.o *gcno valgrind_info.log
+clean:
+	rm a.out
