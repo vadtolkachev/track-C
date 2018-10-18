@@ -6,11 +6,6 @@
 
 typedef int data_t;
 
-#define ALLOC_ERR -2
-#define NULLPTR_ERR -1
-#define EMPTY_ERR 0
-#define SUCCESS 1
-
 
 typedef struct stackElement
 {
