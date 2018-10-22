@@ -135,7 +135,7 @@ int MyStack::checkSum1(long *ref) const
 	char *pByte = (char*) this;
 	long sum1 = 0;
 
-	for(unsigned i = 0; i < sizeof(*this); i++)
+	for(int i = 0; i < (int)sizeof(*this); i++)
 	{
 		if((i >= 24) && (i < 40))
 			sum1 += pByte[i];
@@ -156,7 +156,7 @@ int MyStack::checkSum2(long *ref) const
 	char *pByte = (char*) m_stack;
 	long sum2 = 0;
 
-	for(unsigned i = 0; i < sizeof(data_t) * (m_capacity + 2); i++)
+	for(int i = 0; i < (int)sizeof(data_t) * (m_capacity + 2); i++)
 	{
 		if((i >= 4) && (i < 4*(m_size+1)))
 			sum2 += pByte[i];
@@ -529,7 +529,7 @@ void MyStack::calcSum1()
 	assert(sizeof(*this) == 48);
 
 	m_sum1 = 0;
-	for(unsigned i = 0; i < sizeof(*this); i++)
+	for(int i = 0; i < (int)sizeof(*this); i++)
 	{
 		if((i >= 24) && (i < 40))
 			m_sum1 += pByte[i];
@@ -541,7 +541,7 @@ void MyStack::calcSum2()
 {
 	char *pByte = (char*) m_stack;
 	m_sum2 = 0;
-	for(unsigned i = 0; i < sizeof(data_t) * (m_capacity + 2); i++)
+	for(int i = 0; i < (int)sizeof(data_t) * (m_capacity + 2); i++)
 	{
 		if((i >= 4) && (i < 4*(m_size+1)))
 			m_sum2 += pByte[i];
