@@ -1,10 +1,11 @@
 PROG_OBJS=textSort.o test.o
 CC=g++
-CFLAGS=-fprofile-arcs -ftest-coverage -Wall -Wextra
+COVFLAGS=-fprofile-arcs -ftest-coverage
+CFLAGS=-Wall -Wextra
 VFLAGS=--tool=memcheck --leak-check=full --show-leak-kinds=all --log-file=valgrind_info.log
 
 
-all: build cov dox
+all: clean build 
 
 build: $(PROG_OBJS)
 	$(CC) $(CFLAGS) -o a.out $(PROG_OBJS)

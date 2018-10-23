@@ -181,7 +181,7 @@ int findLastLetter(char *str)
 	int len = strlen(str);
 	for(int i = len - 1; i >= 0; i--)
 	{
-		if(isLetter(str[i], str[i+1]))
+		if(isLetter(str[i-1], str[i]))
 			return i + 1;
 	}
 	
@@ -315,7 +315,7 @@ int rightCmp(const void *a, const void *b)
 	char *st1 = *(char **)a;
 	char *st2 = *(char **)b;
 	
-	return strcmpr(st1, st2, strlen(st1), strlen(st2));
+	return fstrcmpr(st1, st2);
 }
 
 
