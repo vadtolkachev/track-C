@@ -16,13 +16,14 @@ int main()
 	char *bigString = text[0]; 
 	writeText(text, res, nStrings, WITH_SLASHN);
 
-	fprintf(res, "\n\n");
+	const char *str = "--------------------------------------------------------------------------------------------------\n";
+	fprintf(res, "%s%s%s%s",str,str,str,str);
 	leftSort(text, nStrings);
-	writeText(text, res, nStrings, NO_SLASHN);
+	writeText(text, res, nStrings, NO_GARBAGE);
 
-	fprintf(res, "\n\n");
+	fprintf(res, "%s%s%s%s",str,str,str,str);
 	rightSort(text, nStrings);
-	writeText(text, res, nStrings, NO_SLASHN);	
+	writeText(text, res, nStrings, NO_GARBAGE);	
 
 	fclose(file);
 	if(errno != 0)

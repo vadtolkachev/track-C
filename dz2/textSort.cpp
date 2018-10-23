@@ -83,12 +83,15 @@ void writeText(char **text, FILE *res, int nStrings, format form)
 	int checkErr = 0;
 	for(int i = 0; i < nStrings; i++)
 	{	
-		checkErr = fwrite(text[i], strlen(text[i]), 1, res);
-		if((checkErr != 1) && (text[i][0] != 0))
-			exitErr("writing error");
+		if((!isGarbage(text[i])) || (form != NO_GARBAGE))
+		{
+			checkErr = fwrite(text[i], strlen(text[i]), 1, res);
+			if((checkErr != 1) && (text[i][0] != 0))
+				exitErr("writing error");
 
-		if((form == WITH_SLASHN) || (text[i][0] != 0))
-			fprintf(res, "\n");
+			if((form == WITH_SLASHN) || (text[i][0] != 0))
+				fprintf(res, "\n");
+		}
 	}
 }
 
@@ -120,6 +123,21 @@ bool isLetter(char a, char b)
 		return false;
 
 	return true; 
+}
+
+
+bool isGarbage(char *str)
+{
+	int n = 0;
+	while(str[n] != 0)
+	{
+		if((isLetter(str[n], str[n+1])) && (str[n] != 'I') && (str[n] != 'X')
+			&& (str[n] != 'V') && (str[n] != 'L'))
+			return false;
+		n++; 
+	}
+
+	return true;
 }
 
 

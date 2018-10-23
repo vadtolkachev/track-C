@@ -22,7 +22,8 @@ const int ASCII_NUMB_OF_ENG_A = 65;
 enum format
 {
 	WITH_SLASHN,
-	NO_SLASHN
+	NO_SLASHN,
+	NO_GARBAGE
 };
 
 
@@ -39,6 +40,7 @@ void writeText(char **text, FILE *res, int nStrings, format form);
 bool isRusLetter(char a, char b);
 bool isEngLetter(char a);
 bool isLetter(char a, char b);
+bool isGarbage(char *str);
 int getRusNumb(char a1, char a2);
 int getEngNumb(char a);
 char *findFirstLetter(char *str);
