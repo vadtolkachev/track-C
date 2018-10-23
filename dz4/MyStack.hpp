@@ -38,6 +38,8 @@ public:
 
 	void printStack() const;
 	void dumpStack() const;
+	void printStackErr(const char *nErr, const char *file, int line, const char *func, int what, int format) const;
+	void printStackErr(const char *nErr, const char *file, int line, const char *func, long what, int format) const;
 	
 	void calcSum1();
 	void calcSum2();
