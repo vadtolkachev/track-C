@@ -1,28 +1,6 @@
 #include "MyStack.hpp"
 
 
-#define PRINT_ERR(err, file, line, func, what, format)			\
-{									\
-	std::cout << WHITE << file <<":" << line 			\
-		<< ": " << func << ": " << RED << err << " = ";		\
-									\
-	if(format == HEX_F)						\
-		std::cout << std::hex << "0x" << what << std::dec 	\
-			<< NORM <<"\n";					\
-									\
-	if(format == SUM1_F)	 					\
-		std::cout << m_sum1 << ", but should be = "		\
-			<< what << NORM << "\n";			\
-									\
-	if(format == SUM2_F)	 					\
-		std::cout << m_sum2 << ", but should be = "		\
-			<< what << NORM << "\n";			\
-									\
-	if(format == NORM_F)	 					\
-		std::cout << what << NORM << "\n";			\
-}
-
-
 #define ASSERT_ERROR()				\
 {						\
 	int res = checkStack_print(__FILE__, 	\
@@ -265,39 +243,39 @@ int MyStack::checkStack_print(const char *file, int line, const char *func) cons
 
 	switch(nErr)
 	{
-		case NULLPTR_ERR : PRINT_ERR("this = nullptr", file, line, func, 0, NORM_F);
+		case NULLPTR_ERR : print_err("", file, line, func, (void *)0, NORM_F);
 			break;
 
-		case CANARY1_ERR : PRINT_ERR("canary1", file, line, func, m_canary1, HEX_F);
+		case CANARY1_ERR : print_err("canary1", file, line, func, (void *)&m_canary1, HEX_F);
 			break;
 
-		case CANARY2_ERR : PRINT_ERR("canary2", file, line, func, m_canary2, HEX_F);
+		case CANARY2_ERR : print_err("canary2", file, line, func, (void *)&m_canary2, HEX_F);
 			break;
 
-		case SIZE_ERR : PRINT_ERR("size", file, line, func, m_size, NORM_F);
+		case SIZE_ERR : print_err("size", file, line, func, (void *)&m_size, NORM_F);
 			break;
 
-		case CAPACITY_ERR : PRINT_ERR("capacity", file, line, func, m_capacity, NORM_F);
+		case CAPACITY_ERR : print_err("capacity", file, line, func, (void *)&m_capacity, NORM_F);
 			break;
 
-		case CANARY3_ERR : PRINT_ERR("canary3", file, line, func, m_stack[0], HEX_F);
+		case CANARY3_ERR : print_err("canary3", file, line, func, (void *)&m_stack[0], HEX_F);
 			break;
 
-		case CANARY4_ERR : PRINT_ERR("canary4", file, line, func, m_stack[m_capacity+1], HEX_F);
+		case CANARY4_ERR : print_err("canary4", file, line, func, (void *)&m_stack[m_capacity+1], HEX_F);
 			break;
 
-		case POISON_ERR : PRINT_ERR("not a posion", file, line, func, data, NORM_F);
+		case POISON_ERR : print_err("not a posion", file, line, func, (void *)&data, NORM_F);
 			break;
 
-		case SUM1_ERR : PRINT_ERR("sum1", file, line, func, ref, SUM1_F);
+		case SUM1_ERR : print_err("sum1", file, line, func, (void *)&ref, SUM1_F);
 			break;
 
-		case SUM2_ERR : PRINT_ERR("sum2", file, line, func, ref, SUM2_F);
+		case SUM2_ERR : print_err("sum2", file, line, func, (void *)&ref, SUM2_F);
 			break;
 
 		case STACK_OK : break;
 	
-		default : PRINT_ERR("wrong error", file, line, func, nErr, NORM_F);
+		default : print_err("wrong error", file, line, func, (void *)&nErr, NORM_F);
 			break;	
 	}
 	
@@ -610,6 +588,30 @@ void MyStack::printBadStack() const
 	}
 
 	std::cout << "\n\t}\n}\n";
+}
+
+
+void MyStack::print_err(const char *err, const char *file, int line, const char *func, void *what, int format) const
+{
+	if(!what)
+	{
+		printf("%s%s:%d: %s: %sthis = nullptr%s\n", WHITE ,file, line, func, RED, NORM);
+		return;
+	}
+	
+	printf("%s%s:%d: %s: %s%s = ", WHITE, file, line, func, RED,err);
+
+	if(format == HEX_F)
+		printf("0x%lx%s\n", *(long *)what, NORM);				
+			
+	if(format == SUM1_F)	 					
+		printf("%ld but should be %ld%s\n", m_sum1, *(long *)what, NORM);
+									
+	if(format == SUM2_F)	 					
+		printf("%ld but should be %ld%s\n", m_sum2, *(long *)what, NORM);		
+									
+	if(format == NORM_F)	 				
+		printf("%d%s\n", *(int *)what, NORM);
 }
 
 

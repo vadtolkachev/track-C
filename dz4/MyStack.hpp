@@ -41,6 +41,7 @@ public:
 
 	void printStack() const;
 	void printBadStack() const;
+	void print_err(const char *err, const char *file, int line, const char *func, void *what, int format) const;
 	void dumpStack(const char *str) const;
 	void dumpBadStack() const;
 	void dump_err(const char *err, const char *file, int line, const char *func, void *what, int format) const;
