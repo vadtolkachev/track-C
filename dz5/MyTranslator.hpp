@@ -16,5 +16,4 @@ public:
 	int translate(FILE *asmFile, FILE *txtFile, FILE *binFile, TrFormat format);
 	int parseInt(char *asm_code, FILE *txtFile, FILE *binFile);
 	int readInt(char *str, int *res, int *numb);
-
 };
