@@ -3,7 +3,7 @@
 
 int main()
 {
-	FILE *file = fopen("text/2.txt", "r");
+	FILE *file = fopen("text/hamlet.txt", "r");
 	if(errno != 0)
 		exitErr("failed to open file");
 	

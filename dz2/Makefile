@@ -1,4 +1,4 @@
-PROG_OBJS=textSort.o test.o
+PROG_OBJS=textSort.o test2.o
 CC=g++
 COVFLAGS=-fprofile-arcs -ftest-coverage
 CFLAGS=-Wall -Wextra

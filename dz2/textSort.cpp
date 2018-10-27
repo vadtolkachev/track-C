@@ -199,7 +199,7 @@ int findLastLetter(char *str)
 	int len = strlen(str);
 	for(int i = len - 1; i >= 0; i--)
 	{
-		if(isLetter(str[i-1], str[i]))
+		if(isRusLetter(str[i-1], str[i]) || (isEngLetter(str[i])))
 			return i + 1;
 	}
 	
@@ -263,6 +263,17 @@ int fstrcmpl(char *st1, char* st2)
 
 int strcmpr(char *st1, char* st2, int len1, int len2)
 {
+	printf("st1 = ");
+	for(int i = 0; i < len1; i++)
+		printf("%c", st1[i]);
+	puts("");
+	
+	printf("st2 = ");
+	for(int i = 0; i < len2; i++)
+		printf("%c", st2[i]);
+	puts("");
+
+
 	if(len1 == 0)
 	{
 		if(len2 == 0)
@@ -288,6 +299,9 @@ int strcmpr(char *st1, char* st2, int len1, int len2)
 
 	if((isEngLetter(st1[len1-1])) && (isEngLetter(st2[len2-1])))
 	{
+		printf("nSt1 = %d; nSt2 = %d\n", getEngNumb(st1[len1-1]), getEngNumb(st2[len2-1]));
+		printf("cSt1 = %c; cSt2 = %c\n", st1[len1-1], st2[len2-1]);
+		printf("dSt1 = %d; dSt2 = %d\n", st1[len1-1], st2[len2-1]);
 		if(getEngNumb(st1[len1-1]) > getEngNumb(st2[len2-1]))
 			return 1;
 
