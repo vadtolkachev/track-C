@@ -19,7 +19,7 @@ const int NULLPTR_ERR = -21;
 const int EMPTY_ERR = -22;
 const int SUCCESS = 1;
 
-const int BUF = 3;
+const int BUF = 2;
 
 const int NORM_F = 10;
 const int HEX_F = 16;
@@ -30,8 +30,8 @@ const data_t POISON1 = 666;
 const data_t POISON2 = 667;
 const data_t POISON3 = 668;
 
-const data_t CANARY3 = 0xDEAD;
-const data_t CANARY4 = 0xBEDA;
+const data_t CANARY3 = 0xDEADBEEF;
+const data_t CANARY4 = 0xBEDABEDA;
 
 
 const char GREEN[] = "\033[1;32m";

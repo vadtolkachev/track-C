@@ -27,9 +27,16 @@
 {						\
 	int res = checkStack_print(__FILE__, 	\
 		__LINE__, __PRETTY_FUNCTION__);	\
+	checkStack_dump(__FILE__, 		\
+		__LINE__, __PRETTY_FUNCTION__);	\
+						\
 	if(res)					\
 	{					\
-		dumpStack();			\
+		printBadStack();		\
+		dumpBadStack();			\
+						\
+		if(res != NULLPTR_ERR)		\
+			fclose(m_dumpFile);	\
 		abort();			\
 	}					\
 }
@@ -39,18 +46,21 @@
 MyStack::MyStack()
 {
 	m_size = 0;
-	m_capacity = BUF;
+	m_capacity = 0;
+	m_stack = nullptr;
+
 	m_canary1 = (long) &m_canary1;
 	m_canary2 = (long) &m_canary2;
-	m_stack = (data_t *)calloc(2 + BUF, sizeof(data_t));
-	m_stack[0] = CANARY3;
 
-	for(int i = 1; i < BUF + 1; i++)
-		m_stack[i] = (data_t)POISON1;
+	char str[40] = "";
+	getDumpFileName(str);
+	m_dumpFile = fopen(str, "w");
+	assert(errno == 0);
 
-	m_stack[BUF + 1] = CANARY4;
 	calcSum1();
 	calcSum2();
+
+	dumpStack("Stack created");
 }
 
 
@@ -58,6 +68,25 @@ MyStack::~MyStack()
 {
 	ASSERT_ERROR();
 	free(m_stack);
+	
+	fprintf(m_dumpFile, "Stack destroyed\n[%p]\n\n\n", this);
+
+	fclose(m_dumpFile);
+	assert(errno == 0);
+}
+
+
+void MyStack::getDumpFileName(char str[40]) const
+{
+	char str1[45] = "logs/stackInfo[";
+	char str3[6] = "].log";
+
+	char str2[19] = "";
+	sprintf(str2, "%p", this);
+
+	strcat(str1, str2);
+	strcat(str1, str3);
+	strcpy(str, str1);
 }
 
 
@@ -81,7 +110,7 @@ int MyStack::checkSecondCanary() const
 
 int MyStack::checkThirdCanary() const
 {
-	if(m_stack[0] != CANARY3)
+	if((m_capacity != 0) && (m_stack[0] != CANARY3))
 		return CANARY3_ERR;
 
 	return STACK_OK;
@@ -90,7 +119,7 @@ int MyStack::checkThirdCanary() const
 
 int MyStack::checkFourthCanary() const
 {
-	if(m_stack[m_capacity+1] != CANARY4)
+	if((m_capacity != 0) && (m_stack[m_capacity+1] != CANARY4))
 		return CANARY4_ERR;
 
 	return STACK_OK;
@@ -135,15 +164,16 @@ int MyStack::checkSum1(long *ref) const
 	char *pByte = (char*) this;
 	long sum1 = 0;
 
+	assert(sizeof(*this) == 56);
 	for(int i = 0; i < (int)sizeof(*this); i++)
 	{
-		if((i >= 24) && (i < 40))
+		if((i >= 24) && (i < 48))
 			sum1 += pByte[i];
 	}
 
 	if(ref)
 		*ref = sum1;
-	
+
 	if(m_sum1 != sum1)
 		return SUM1_ERR;
 
@@ -203,6 +233,10 @@ int MyStack::checkStack(data_t *data, long *ref) const
 	if(err)
 		return err; 
 
+	err = checkSum1(ref);
+	if(err)
+		return err; 
+
 	err = checkThirdCanary();
 	if(err)
 		return err; 
@@ -212,10 +246,6 @@ int MyStack::checkStack(data_t *data, long *ref) const
 		return err; 
 
 	err = checkPoison(data);
-	if(err)
-		return err; 
-
-	err = checkSum1(ref);
 	if(err)
 		return err; 
 
@@ -235,39 +265,87 @@ int MyStack::checkStack_print(const char *file, int line, const char *func) cons
 
 	switch(nErr)
 	{
-		case NULLPTR_ERR : printStackErr("this = nullptr", file, line, func, 0, NORM_F);
+		case NULLPTR_ERR : PRINT_ERR("this = nullptr", file, line, func, 0, NORM_F);
 			break;
 
-		case CANARY1_ERR : printStackErr("canary1", file, line, func, m_canary1, HEX_F);
+		case CANARY1_ERR : PRINT_ERR("canary1", file, line, func, m_canary1, HEX_F);
 			break;
 
-		case CANARY2_ERR : printStackErr("canary2", file, line, func, m_canary2, HEX_F);
+		case CANARY2_ERR : PRINT_ERR("canary2", file, line, func, m_canary2, HEX_F);
 			break;
 
-		case SIZE_ERR : printStackErr("size", file, line, func, m_size, NORM_F);
+		case SIZE_ERR : PRINT_ERR("size", file, line, func, m_size, NORM_F);
 			break;
 
-		case CAPACITY_ERR : printStackErr("capacity", file, line, func, m_capacity, NORM_F);
+		case CAPACITY_ERR : PRINT_ERR("capacity", file, line, func, m_capacity, NORM_F);
 			break;
 
-		case CANARY3_ERR : printStackErr("canary3", file, line, func, m_stack[0], HEX_F);
+		case CANARY3_ERR : PRINT_ERR("canary3", file, line, func, m_stack[0], HEX_F);
 			break;
 
-		case CANARY4_ERR : printStackErr("canary4", file, line, func, m_stack[m_capacity+1], HEX_F);
+		case CANARY4_ERR : PRINT_ERR("canary4", file, line, func, m_stack[m_capacity+1], HEX_F);
 			break;
 
-		case POISON_ERR : printStackErr("not a posion", file, line, func, data, NORM_F);
+		case POISON_ERR : PRINT_ERR("not a posion", file, line, func, data, NORM_F);
 			break;
 
-		case SUM1_ERR : printStackErr("sum1", file, line, func, ref, SUM1_F);
+		case SUM1_ERR : PRINT_ERR("sum1", file, line, func, ref, SUM1_F);
 			break;
 
-		case SUM2_ERR : printStackErr("sum2", file, line, func, ref, SUM2_F);
+		case SUM2_ERR : PRINT_ERR("sum2", file, line, func, ref, SUM2_F);
 			break;
 
 		case STACK_OK : break;
 	
-		default : printStackErr("wrong error", file, line, func, nErr, NORM_F);
+		default : PRINT_ERR("wrong error", file, line, func, nErr, NORM_F);
+			break;	
+	}
+	
+	return nErr;
+}
+
+
+int MyStack::checkStack_dump(const char *file, int line, const char *func) const
+{
+	data_t data;
+	long ref;
+	int nErr = checkStack(&data, &ref);
+
+	switch(nErr)
+	{
+		case NULLPTR_ERR : dump_err("", file, line, func, (void *)0, HEX_F);
+			break;
+		
+		case CANARY1_ERR : dump_err("canary1", file, line, func, (void *)&m_canary1, HEX_F);
+			break;
+
+		case CANARY2_ERR : dump_err("canary2", file, line, func, (void *)&m_canary2, HEX_F);
+			break;
+
+		case SIZE_ERR : dump_err("size", file, line, func, (void *)&m_size, NORM_F);
+			break;
+
+		case CAPACITY_ERR : dump_err("capacity", file, line, func, (void *)&m_capacity, NORM_F);
+			break;
+
+		case CANARY3_ERR : dump_err("canary3", file, line, func, (void *)&m_stack[0], HEX_F);
+			break;
+
+		case CANARY4_ERR : dump_err("canary4", file, line, func, (void *)&m_stack[m_capacity+1], HEX_F);
+			break;
+
+		case POISON_ERR : dump_err("not a posion", file, line, func, (void *)&data, NORM_F);
+			break;
+
+		case SUM1_ERR : dump_err("sum1", file, line, func, (void *)&ref, SUM1_F);
+			break;
+
+		case SUM2_ERR : dump_err("sum2", file, line, func, (void *)&ref, SUM2_F);
+			break;
+
+		case STACK_OK : break;
+	
+		default : dump_err("wrong error", file, line, func, (void *)&nErr, NORM_F);
 			break;	
 	}
 	
@@ -310,15 +388,23 @@ int MyStack::push(data_t data)
 	if(m_capacity == m_size)
 	{
 		data_t *tmp;
-		tmp = (data_t *) reallocarray(m_stack, m_capacity + BUF + 2, sizeof(data_t));
+		int tmp_size = BUF + 2;
+		if(m_capacity)
+			tmp_size = m_capacity*2 + 2;
+
+		tmp = (data_t *) reallocarray(m_stack, tmp_size, sizeof(data_t));
 		if(!tmp)
 		{
 			ASSERT_ERROR();
 			return ALLOC_ERR;
 		}
 
-		m_stack = tmp;		
-		m_capacity += BUF;
+		m_stack = tmp;
+		m_capacity = tmp_size - 2;
+
+		if(m_size == 0)
+			m_stack[0] = CANARY3;
+		
 		for(int i = m_size + 1; i < m_capacity + 1; i++)
 			m_stack[i] = (data_t)POISON1;
 		m_stack[m_capacity + 1] = CANARY4;
@@ -328,6 +414,8 @@ int MyStack::push(data_t data)
 	
 	calcSum1();
 	calcSum2();
+
+	dumpStack("Stack push");
 
 	ASSERT_ERROR();
 	return SUCCESS;
@@ -343,23 +431,11 @@ int MyStack::pop()
 
 	m_stack[m_size--] = POISON2;
 	
-	if(m_capacity == m_size + BUF)
-	{
-		data_t *tmp;
-		tmp = (data_t *) reallocarray(m_stack, m_capacity - BUF + 2, sizeof(data_t));
-		if(!tmp)
-		{	
-			ASSERT_ERROR();
-			return ALLOC_ERR;
-		}
-
-		m_stack = tmp;		
-		m_capacity -= BUF;
-		m_stack[m_capacity + 1] = CANARY4;
-	}
 
 	calcSum1();
 	calcSum2();
+
+	dumpStack("Stack pop");
 
 	ASSERT_ERROR();
 	return SUCCESS;
@@ -387,9 +463,19 @@ void MyStack::printStack() const
 		<< "\n\tsum2 = " << m_sum2
 		<< "\n\tsize = " << m_size 
 		<< "\n\tcapacity = " << m_capacity
-		<< "\n\tdata[" << m_capacity + 2 << "] [" << m_stack << "]\n\t{";
-		
-	for(int i = 0; i < m_capacity + 2; i++)
+		<< "\n\tdata[" << m_capacity + 2 << "] [";
+
+	if(m_stack) 
+		 std::cout << m_stack;
+	else 
+		std::cout << "nullptr";
+	std::cout << "]\n\t{";
+	
+	int count = 0;
+	if(m_capacity != 0)
+		count = m_capacity + 2;
+	
+	for(int i = 0; i < count; i++)
 	{
 		std::cout << "\n\t\t";
 		if((i > 0) && (i <= m_size))
@@ -424,10 +510,9 @@ void MyStack::printStack() const
 }
 
 
-void MyStack::dumpStack() const
+void MyStack::printBadStack() const
 {
 	data_t data;
-	//long ref;
 	int nErr = checkStack(&data, nullptr);
 
 	std::cout << "Stack [" << this << "]";
@@ -456,17 +541,10 @@ void MyStack::dumpStack() const
 		return;
 	}
 	
-	std::cout << "\n\tsize = " << m_size;
-	
-	if(nErr == SIZE_ERR)
-	{
-		std::cout << "\n}\n";
-		return;
-	}
-	
+	std::cout << "\n\tsize = " << m_size;	
 	std::cout << "\n\tcapacity = " << m_capacity;
 
-	if(nErr == CAPACITY_ERR)
+	if((nErr == CAPACITY_ERR) || (nErr == SIZE_ERR))
 	{
 		std::cout << "\n}\n";
 		return;
@@ -484,11 +562,23 @@ void MyStack::dumpStack() const
 		return;
 	}
 	
-	std::cout << "\n\tsum1 = " << m_sum1 
-		<< "\n\tsum2 = " << m_sum2;
+	std::cout << "\n\tsum1 = " << m_sum1;
 
-	std::cout << "\n\tdata[" << m_capacity + 2 << "] [" << m_stack << "]\n\t{";
-		
+	if(nErr == SUM1_ERR)
+	{
+		std::cout << "\n}\n";
+		return;
+	}
+
+	std::cout << "\n\tsum2 = " << m_sum2;
+
+	std::cout << "\n\tdata[" << m_capacity + 2 << "] [";
+	if(m_stack) 
+		 std::cout << m_stack;
+	else 
+		std::cout << "nullptr";	
+	std::cout << "]\n\t{";
+
 	for(int i = 0; i < m_capacity + 2; i++)
 	{
 		std::cout << "\n\t\t";
@@ -523,59 +613,223 @@ void MyStack::dumpStack() const
 }
 
 
-void MyStack::printStackErr(const char *err, const char *file, int line, const char *func, int what, int format) const
+void MyStack::dumpStack(const char *str) const
 {
-	std::cout << WHITE << file <<":" << line 			
-		<< ": " << func << ": " << RED << err << " = ";		
-									
-	if(format == HEX_F)						
-		std::cout << std::hex << "0x" << what << std::dec 	
-			<< NORM <<"\n";					
-									
-	if(format == SUM1_F)	 					
-		std::cout << m_sum1 << ", but should be = "		
-			<< what << NORM << "\n";			
-									
-	if(format == SUM2_F)	 					
-		std::cout << m_sum2 << ", but should be = "		
-			<< what << NORM << "\n";			
-									
-	if(format == NORM_F)	 				
-		std::cout << what << NORM << "\n";			
+	assert(m_dumpFile);
+
+	ASSERT_ERROR();
+
+	fprintf(m_dumpFile, "%s\n", str);
+
+	fprintf(m_dumpFile, "Stack [%p]\n{\n\tcanary1 = 0x%lx\n\tsum1 = %ld\n\tsum2 = %ld", this, m_canary1, m_sum1, m_sum2);
+	fprintf(m_dumpFile, "\n\tsize = %d\n\tcapacity = %d\n\tdata[%d] [", m_size, m_capacity, m_capacity + 2);
+
+	if(m_stack) 
+		fprintf(m_dumpFile, "%p", m_stack);
+	else 
+		fprintf(m_dumpFile, "nullptr");
+	fprintf(m_dumpFile, "]\n\t{");
+	
+	int count = 0;
+	if(m_capacity != 0)
+		count = m_capacity + 2;
+	
+	for(int i = 0; i < count; i++)
+	{
+		fprintf(m_dumpFile, "\n\t\t");
+		if((i > 0) && (i <= m_size))
+			fprintf(m_dumpFile, "*");
+		else
+		{
+			if((i == 0) || (i == m_capacity + 1))
+				fprintf(m_dumpFile, ">");
+			else
+				fprintf(m_dumpFile, " ");
+		}
+
+		fprintf(m_dumpFile, "[%d] : ", i);
+
+		if((i == 0) || (i == m_capacity + 1))
+			fprintf(m_dumpFile, "0x%x", m_stack[i]);
+		else
+			fprintf(m_dumpFile, "%d", m_stack[i]);
+
+		if(i == 0)
+			fprintf(m_dumpFile, " (canary3)");
+
+		if(i == m_capacity + 1)
+			fprintf(m_dumpFile, " (canary4)");
+
+		if((i > m_size) && (i != m_capacity + 1))
+			fprintf(m_dumpFile, " (poison)");
+	}
+		
+	fprintf(m_dumpFile, "\n\t}\n\tcanary2 = 0x%lx\n}\n\n\n", m_canary2);
 }
 
 
-void MyStack::printStackErr(const char *err, const char *file, int line, const char *func, long what, int format) const
+void MyStack::dumpBadStack() const
 {
-	std::cout << WHITE << file <<":" << line 			
-		<< ": " << func << ": " << RED << err << " = ";		
-									
-	if(format == HEX_F)						
-		std::cout << std::hex << "0x" << what << std::dec 	
-			<< NORM <<"\n";					
-									
+	if(!this)
+	{
+		char str1[45] = "logs/stackInfo[";
+		char str3[6] = "].log";
+
+		char str2[8] = "nullptr";
+		strcat(str1, str2);
+		strcat(str1, str3);
+	
+		FILE *dumpFile = fopen(str1, "a");
+	
+		fprintf(dumpFile, "Stack [%p] (ERROR!!!)\n{nullptr}", this);
+
+		fclose(dumpFile);
+		return;
+	}
+
+	assert(m_dumpFile);
+
+	data_t data;
+	int nErr = checkStack(&data, nullptr);
+
+	fprintf(m_dumpFile, "Stack [%p]", this);
+	if(nErr)
+		fprintf(m_dumpFile, " (ERROR!!!)\n");
+	
+	fprintf(m_dumpFile, "{\n\tcanary1 = 0x%lx", m_canary1);
+
+	if(nErr == CANARY1_ERR)
+	{
+		fprintf(m_dumpFile, "\n}\n");
+		return;
+	}
+
+	fprintf(m_dumpFile, "\n\tcanary2 = 0x%lx", m_canary2);
+
+	if(nErr == CANARY2_ERR)
+	{
+		fprintf(m_dumpFile, "\n}\n");
+		return;
+	}
+	
+	fprintf(m_dumpFile, "\n\tsize = %d", m_size);
+	fprintf(m_dumpFile, "\n\tcapacity = %d", m_capacity);
+
+	if((nErr == CAPACITY_ERR) || (nErr == SIZE_ERR))
+	{
+		fprintf(m_dumpFile, "\n}\n");
+		return;
+	}
+
+	fprintf(m_dumpFile, "\n\tsum1 = %ld", m_sum1);
+	
+	if(nErr == SUM1_ERR)
+	{
+		fprintf(m_dumpFile, "\n}\n");
+		return;
+	}
+
+	fprintf(m_dumpFile, "\n\tsum2 = %ld", m_sum2);
+
+	if(nErr == CANARY3_ERR)
+	{
+		fprintf(m_dumpFile, "\n\tcanary3 = 0x%x\n}\n", m_stack[0]);
+		return;
+	}
+
+	if(nErr == CANARY4_ERR)
+	{
+		fprintf(m_dumpFile, "\n\tcanary4 = 0x%x\n}\n", m_stack[m_capacity + 1]);
+		return;
+	}
+	
+	fprintf(m_dumpFile, "\n\tdata[%d] [", m_capacity + 2);
+
+	if(m_stack) 
+		 fprintf(m_dumpFile, "%p", m_stack);
+	else 
+		fprintf(m_dumpFile, "nullptr");	
+	fprintf(m_dumpFile, "]\n\t{");
+
+	for(int i = 0; i < m_capacity + 2; i++)
+	{
+		fprintf(m_dumpFile, "\n\t\t");
+		if((i > 0) && (i <= m_size))
+			fprintf(m_dumpFile, "*");
+		else
+		{
+			if((i == 0) || (i == m_capacity + 1))
+				fprintf(m_dumpFile, ">");
+			else
+				fprintf(m_dumpFile, " ");
+		}
+	
+		fprintf(m_dumpFile, "[%d] : ", i);
+
+		if((i == 0) || (i == m_capacity + 1))
+			fprintf(m_dumpFile, "0x%x", m_stack[i]);
+		else
+			fprintf(m_dumpFile, "%d", m_stack[i]);
+
+		if(i == 0)
+			fprintf(m_dumpFile, " (canary3)");
+
+		if(i == m_capacity + 1)
+			fprintf(m_dumpFile, " (canary4)");
+
+		if((i > m_size) && (i != m_capacity + 1))
+			fprintf(m_dumpFile, " (poison)");
+	}
+
+	fprintf(m_dumpFile, "\n\t}\n}\n\n\n");
+}
+
+
+void MyStack::dump_err(const char *err, const char *file, int line, const char *func, void *what, int format) const
+{
+	
+	if(!what)
+	{
+		char str1[45] = "logs/stackInfo[";
+		char str3[6] = "].log";
+
+		char str2[8] = "nullptr";
+		strcat(str1, str2);
+		strcat(str1, str3);
+
+		FILE *dumpFile = fopen(str1, "w");
+	
+		fprintf(dumpFile, "%s:%d: %s: this = nullptr\n",file, line, func);
+
+		fclose(dumpFile);
+		return;
+	}	
+	
+	fprintf(m_dumpFile, "%s:%d: %s: %s = ",file, line, func, err);
+
+	if(format == HEX_F)
+		fprintf(m_dumpFile, "0x%lx\n", *(long *)what);				
+			
 	if(format == SUM1_F)	 					
-		std::cout << m_sum1 << ", but should be = "		
-			<< what << NORM << "\n";			
+		fprintf(m_dumpFile, "%ld but should be %ld\n", m_sum1, *(long *)what);
 									
 	if(format == SUM2_F)	 					
-		std::cout << m_sum2 << ", but should be = "		
-			<< what << NORM << "\n";			
+		fprintf(m_dumpFile, "%ld but should be %ld\n", m_sum2, *(long *)what);		
 									
 	if(format == NORM_F)	 				
-		std::cout << what << NORM << "\n";			
+		fprintf(m_dumpFile, "%d\n", *(int *)what);		
 }
 
 
 void MyStack::calcSum1()
 {
 	char *pByte = (char*) this;
-	assert(sizeof(*this) == 48);
+	assert(sizeof(*this) == 56);
 
 	m_sum1 = 0;
 	for(int i = 0; i < (int)sizeof(*this); i++)
 	{
-		if((i >= 24) && (i < 40))
+		if((i >= 24) && (i < 48))
 			m_sum1 += pByte[i];
 	}
 }

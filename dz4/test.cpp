@@ -1,6 +1,4 @@
 #include "MyStack.hpp"
-#include <iostream>
-
 
 #define UNITTEST(what,op,ref)						\
 {									\
@@ -17,21 +15,10 @@
 			<< #op" " << comp << NORM << std::endl;		\
 }
 
-
 int main()
-{
-	/*int arr1[3];
-	for(int i = -20; i < 20; i++)
-		printf("arr1[%d] = %p\n", i, &arr1[i]);*/
-	
-	MyStack stack;
-	stack.printStack();
+{	
+	MyStack stack = MyStack();
 	data_t data = 0;
-
-	/*int arr2[3];
-	for(int i = -20; i < 20; i++)
-		printf("arr2[%d] = %p\n", i, &arr2[i]);*/
-
 	
 	UNITTEST(stack.isEmpty(), !=, true); 
 	UNITTEST(stack.pop(), ==, EMPTY_ERR);
@@ -39,7 +26,7 @@ int main()
 	UNITTEST(stack.getTop(nullptr), ==, NULLPTR_ERR);
 
 	UNITTEST(stack.getSize(), ==, 0);
-	UNITTEST(stack.getCapacity(), ==, BUF);
+	UNITTEST(stack.getCapacity(), ==, 0);
 	UNITTEST(stack.push(6), ==, SUCCESS);	
 	
 	UNITTEST(stack.getSize(), ==, SUCCESS);	
@@ -59,7 +46,7 @@ int main()
 
 	UNITTEST(stack.pop(), ==, SUCCESS);
 	UNITTEST(stack.getSize(), == , 3);
-	UNITTEST(stack.getCapacity(), == , BUF);
+	UNITTEST(stack.getCapacity(), == , 2*BUF);
 	
 	UNITTEST(stack.isEmpty(), !=, false);
 
@@ -67,7 +54,16 @@ int main()
 	UNITTEST(stack.push(7), ==, SUCCESS);
 	UNITTEST(stack.pop(), ==, SUCCESS);
 	
-	stack.printStack();
+	stack.push(5);
+
+	MyStack stack2;
+	stack2.push(7);	
+
+	for(int i = 1; i < 100; i++)
+		stack.push(i);
+
+	MyStack *pStack = new MyStack();
+	delete pStack;
 
 	return 0;
 }

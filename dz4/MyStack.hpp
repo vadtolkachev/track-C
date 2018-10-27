@@ -2,9 +2,11 @@
 #include "defines.hpp"
 #include <new>
 #include <stdlib.h>
-#include <cstdint>
 #include <iostream>
+#include <stdio.h>
 #include <assert.h>
+#include <errno.h>
+#include <cstring>
 
 
 class MyStack
@@ -26,6 +28,7 @@ public:
 
 	int checkStack(data_t *data, long *ref) const;
 	int checkStack_print(const char *file, int line, const char *func) const;
+	int checkStack_dump(const char *file, int line, const char *func) const;
 
 	int getTop(data_t *res) const;
 	int getSize() const;
@@ -37,9 +40,12 @@ public:
 	bool isEmpty() const;
 
 	void printStack() const;
-	void dumpStack() const;
-	void printStackErr(const char *nErr, const char *file, int line, const char *func, int what, int format) const;
-	void printStackErr(const char *nErr, const char *file, int line, const char *func, long what, int format) const;
+	void printBadStack() const;
+	void dumpStack(const char *str) const;
+	void dumpBadStack() const;
+	void dump_err(const char *err, const char *file, int line, const char *func, void *what, int format) const;
+
+	void getDumpFileName(char str[40]) const;
 	
 	void calcSum1();
 	void calcSum2();
@@ -53,6 +59,7 @@ private:
 	int m_size;
 	int m_capacity;	
 	data_t *m_stack;
+	FILE *m_dumpFile;
 
 	long m_canary2;
 };
