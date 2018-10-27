@@ -20,7 +20,6 @@
 }
 
 
-
 MyStack::MyStack()
 {
 	m_size = 0;
