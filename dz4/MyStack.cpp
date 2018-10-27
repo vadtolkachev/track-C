@@ -671,7 +671,7 @@ void MyStack::dumpStack(const char *str) const
 
 void MyStack::dumpBadStack() const
 {
-	if(!this)
+	if(checkNullptr() == NULLPTR_ERR)
 	{
 		char str1[45] = "logs/stackInfo[";
 		char str3[6] = "].log";
