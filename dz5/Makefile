@@ -24,8 +24,8 @@ cov:
 cleanCov:
 	rm -rf *gcda *.info covinfo 
 
-cleanLog:
-	rm -rf logs/stackInfo*.log
+cleanInfo:
+	rm -rf logs/stackInfo*.log mach_code.txt mach_code.bin
 
-clean: cleanCov cleanLog
+clean: cleanCov cleanInfo
 	rm -rf a.out *.o *gcno valgrind_info.log 
