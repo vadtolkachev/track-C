@@ -29,7 +29,7 @@ MyStack::MyStack()
 	m_canary1 = (long) &m_canary1;
 	m_canary2 = (long) &m_canary2;
 
-	char str[40] = "";
+	char str[45] = "";
 	getDumpFileName(str);
 	m_dumpFile = fopen(str, "w");
 	assert(errno == 0);
@@ -53,7 +53,7 @@ MyStack::~MyStack()
 }
 
 
-void MyStack::getDumpFileName(char str[40]) const
+void MyStack::getDumpFileName(char str[45]) const
 {
 	char str1[45] = "logs/stackInfo[";
 	char str3[6] = "].log";
@@ -114,7 +114,7 @@ int MyStack::checkSize() const
 
 int MyStack::checkCapacity() const
 {
-	if((m_capacity < 0) || (m_capacity % BUF != 0))
+	if((m_capacity < 0) || (m_capacity % S_BUF != 0))
 		return CAPACITY_ERR;
 
 	return STACK_OK;
@@ -362,10 +362,15 @@ int MyStack::push(data_t data)
 {
 	ASSERT_ERROR();
 
+	#ifdef S_DOUBLE
+	if(std::isfinite(data) == 0)
+		return INF_ERR;
+	#endif
+
 	if(m_capacity == m_size)
 	{
 		data_t *tmp;
-		int tmp_size = BUF + 2;
+		int tmp_size = S_BUF + 2;
 		if(m_capacity)
 			tmp_size = m_capacity*2 + 2;
 
@@ -650,10 +655,19 @@ void MyStack::dumpStack(const char *str) const
 
 		fprintf(m_dumpFile, "[%d] : ", i);
 
+		#ifdef S_INT
 		if((i == 0) || (i == m_capacity + 1))
-			fprintf(m_dumpFile, "0x%x", m_stack[i]);
+			fprintf(m_dumpFile, "0x%X", m_stack[i]);
 		else
 			fprintf(m_dumpFile, "%d", m_stack[i]);
+		#endif
+
+		#ifdef S_DOUBLE
+		if((i == 0) || (i == m_capacity + 1))
+			fprintf(m_dumpFile, "0x%A", m_stack[i]);
+		else
+			fprintf(m_dumpFile, "%lg", m_stack[i]);
+		#endif
 
 		if(i == 0)
 			fprintf(m_dumpFile, " (canary3)");
@@ -734,13 +748,25 @@ void MyStack::dumpBadStack() const
 
 	if(nErr == CANARY3_ERR)
 	{
-		fprintf(m_dumpFile, "\n\tcanary3 = 0x%x\n}\n", m_stack[0]);
+		#ifdef S_INT
+		fprintf(m_dumpFile, "\n\tcanary3 = 0x%X\n}\n", m_stack[0]);
+		#endif
+
+		#ifdef S_DOUBLE
+		fprintf(m_dumpFile, "\n\tcanary3 = 0x%A\n}\n", m_stack[0]);
+		#endif
 		return;
 	}
 
 	if(nErr == CANARY4_ERR)
 	{
-		fprintf(m_dumpFile, "\n\tcanary4 = 0x%x\n}\n", m_stack[m_capacity + 1]);
+		#ifdef S_INT
+		fprintf(m_dumpFile, "\n\tcanary4 = 0x%X\n}\n", m_stack[m_capacity + 1]);
+		#endif
+
+		#ifdef S_DOUBLE
+		fprintf(m_dumpFile, "\n\tcanary4 = 0x%A\n}\n", m_stack[m_capacity + 1]);
+		#endif
 		return;
 	}
 	
@@ -767,10 +793,19 @@ void MyStack::dumpBadStack() const
 	
 		fprintf(m_dumpFile, "[%d] : ", i);
 
+		#ifdef S_INT
 		if((i == 0) || (i == m_capacity + 1))
-			fprintf(m_dumpFile, "0x%x", m_stack[i]);
+			fprintf(m_dumpFile, "0x%X", m_stack[i]);
 		else
 			fprintf(m_dumpFile, "%d", m_stack[i]);
+		#endif
+
+		#ifdef S_DOUBLE
+		if((i == 0) || (i == m_capacity + 1))
+			fprintf(m_dumpFile, "0x%A", m_stack[i]);
+		else
+			fprintf(m_dumpFile, "%lg", m_stack[i]);
+		#endif
 
 		if(i == 0)
 			fprintf(m_dumpFile, " (canary3)");
