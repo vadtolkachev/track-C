@@ -1,5 +1,5 @@
-PROG_OBJS=test.o MyStack.o MyTranslator.o MyProcessor.o
-CC=g++
+PROG_OBJS=src/test.cpp src/MyAssembler.cpp src/MyDisassembler.cpp ../dz4/debug/MyStack.cpp src/MyProcessor.cpp
+CPP=g++
 COVFLAGS=-fprofile-arcs -ftest-coverage
 CFLAGS=-Wall -Wextra
 VFLAGS=--tool=memcheck --leak-check=full --show-leak-kinds=all --log-file=valgrind_info.log
@@ -7,10 +7,10 @@ VFLAGS=--tool=memcheck --leak-check=full --show-leak-kinds=all --log-file=valgri
 all: clean build
 
 build: $(PROG_OBJS)
-	$(CC) $(CFLAGS) -o a.out $(PROG_OBJS)
+	$(CPP) $(PROG_OBJS) $(CFLAGS) -o a.out 
 
-%.o: %.cpp
-	$(CC) $(CFLAGS) -o $@ -c $<
+run: cleanInfo
+	./a.out
 
 val:
 	valgrind $(VFLAGS) ./a.out
@@ -25,7 +25,7 @@ cleanCov:
 	rm -rf *gcda *.info covinfo 
 
 cleanInfo:
-	rm -rf logs/stackInfo*.log mach_code.txt mach_code.bin
+	rm -rf logs/*.log code/mach_code.txt code/mach_code.bin code/mach_code2.txt code/asm_code_res.txt
 
 clean: cleanCov cleanInfo
 	rm -rf a.out *.o *gcno valgrind_info.log 
