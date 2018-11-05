@@ -1,2 +1,4 @@
 *
 !.gitignore
+!asm_code.txt
+!asm_code2.txt

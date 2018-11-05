@@ -1,0 +1,22 @@
+push 10000
+push 433
+push 54
+add
+sub
+mul
+div
+out
+end
+push rax
+push rbx
+push rcx
+push rdx
+push [rax]
+push [rbx]
+push [rcx]
+push [rdx]
+push [rcx+890]
+push [rax-5]
+push [0]
+push [-124]
+push [52]
