@@ -1,5 +1,4 @@
 #define S_DEBUG
-//#define S_DOUBLE
 #include "MyProcessor.hpp"
 #include "MyAssembler.hpp"
 #include "MyDisassembler.hpp"
@@ -23,7 +22,7 @@ void makeAsm(const char *asmStr, const char *txtStr, const char *binStr)
 	if(!txtFile)
 		exitErr("fopen txtFile");
 
-	FILE *binFile = fopen(binStr, "wb");
+	FILE *binFile = fopen(binStr, "w");
 	if(!binFile)
 		exitErr("fopen binFile");
 
@@ -64,6 +63,7 @@ void makeDAsm(const char *binStr, const char *txtStr, const char *asmResStr)
 	int checkErr = theDasm.disassemble(binFile, txtFile2, asmFileRes);
 	if(checkErr == SUCCESS)
 		puts("2.Success");
+
 	else	
 		printf("2.Err = %d\n", checkErr);
 
@@ -86,11 +86,7 @@ void makeProcExec(const char *binStr)
 		exitErr("fopen binFile");
 
 	MyProcessor proc;
-	int checkErr = proc.proc_exec(binFile);
-	if(checkErr == SUCCESS)
-		puts("3.Success");
-	else	
-		printf("3.Err = %d\n", checkErr);
+	proc.proc_exec(binFile);
 
 	fclose(binFile);
 	if(errno)
@@ -103,7 +99,7 @@ void makeProcExec(const char *binStr)
 
 int main()
 {	
-	char asmStr[25] = "code/asm_code5.txt";
+	char asmStr[25] = "code/SolveSquare.txt";
 	char txtStr[25] = "code/mach_code.txt";
 	char binStr[25] = "code/mach_code.bin";
 	char txtStr2[25] = "code/mach_code2.txt";

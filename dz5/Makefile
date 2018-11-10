@@ -1,4 +1,4 @@
-PROG_OBJS=src/test.cpp src/MyAssembler.cpp src/MyDisassembler.cpp ../dz4/debug/MyStack.cpp src/MyProcessor.cpp
+PROG_OBJS=src/test.cpp src/MyAssembler.cpp src/MyDisassembler.cpp ../dz4/debug/MyStack.cpp src/MyProcessor.cpp 
 CPP=g++
 COVFLAGS=-fprofile-arcs -ftest-coverage
 CFLAGS=-Wall -Wextra

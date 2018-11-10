@@ -16,22 +16,6 @@ public:
 	int readFile(FILE *file, char **str, long int *pSize);
 	int proc_exec(FILE *binFile);
 
-	int push(data_t data);
-	int pushR(char nReg);
-	int pop(data_t *data);
-	int popR(char nReg);
-	int add();
-	int sub();
-	int mul();
-	int div();
-	int pr_sin();
-	int pr_cos();
-	int pr_sqrt();
-	int in();
-	int out();
-
-	int solveSquare();
-
 	void getDumpFileName(char str[45]) const;
 	void dumpProc(const char *str) const;
 

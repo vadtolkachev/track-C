@@ -25,6 +25,22 @@ push rbx
 push rcx
 push rdx
 push rax
+push 65
 in
 out
+push [rax]
+push [rbx]
+push [rcx]
+push [rdx]
+push [5]
+push [6]
+
+:hello
+push [0]
+push [5]
+pop [rax]
+pop [rbx]
+pop [rcx]
+pop [rdx]
+jmp hello
 end
