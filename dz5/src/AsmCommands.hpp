@@ -7,7 +7,11 @@ const char N_##name = num;
 
 #undef CMD_DEF
 
-const char N_RAX = 20;
-const char N_RBX = 21;
-const char N_RCX = 22;
-const char N_RDX = 23;
+
+#define REG_DEF(big_name, small_name, numb) \
+const char N_R##big_name##X = numb;
+
+#include "RegDef.hpp"
+
+#undef REG_DEF
+

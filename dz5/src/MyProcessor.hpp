@@ -7,6 +7,9 @@
 #include <sys/stat.h>
 
 
+const long int RAM_SIZE = 10;
+
+
 class MyProcessor
 {
 public:
@@ -22,8 +25,9 @@ public:
 
 private:
 	MyStack m_stack;
+	MyStack m_retStack;
 	char *m_code;
-	char *m_RAM;
+	char m_RAM[RAM_SIZE];
 	long int m_ramSize;
 	unsigned m_index;
 	int m_errno;
@@ -33,4 +37,5 @@ private:
 	data_t m_rbx;
 	data_t m_rcx;
 	data_t m_rdx;
+	data_t m_rex;
 };

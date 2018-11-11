@@ -5,8 +5,11 @@
 MyProcessor::MyProcessor()
 {
 	m_code = nullptr;
-	m_RAM = nullptr;
-	m_ramSize = 0;
+	//m_RAM = nullptr;
+	//m_ramSize = 0;
+	m_ramSize = RAM_SIZE;
+	memset(m_RAM, 0, RAM_SIZE);
+
 	m_index = 0;
 	m_errno = SUCCESS;
 
@@ -14,6 +17,7 @@ MyProcessor::MyProcessor()
 	m_rbx = 0;
 	m_rcx = 0;
 	m_rdx = 0;
+	m_rex = 0;
 
 	char str[45] = "";
 	getDumpFileName(str);
@@ -66,11 +70,10 @@ int MyProcessor::proc_exec(FILE *binFile)
 	if(checkErr != SUCCESS)
 		return checkErr;
 
-	m_RAM = (char *)calloc(10*size, sizeof(char));
-	if((errno != 0) || (m_RAM == nullptr))
-		return ALLOC_ERR;
-	
-	m_ramSize = 10*size;
+	//m_RAM = (char *)calloc(10*size, sizeof(char));
+	//if((errno != 0) || (m_RAM == nullptr))
+	//	return ALLOC_ERR;
+	//m_ramSize = 10*size;
 	m_index = 0;
 	m_errno = SUCCESS;
 
@@ -92,6 +95,7 @@ int MyProcessor::proc_exec(FILE *binFile)
 			printf("m_errno = %d\n", m_errno);
 			fclose(m_dumpFile);
 			m_stack.~MyStack();
+			m_retStack.~MyStack();
 			assert(0);
 			return PARSE_ERR;
 		}
@@ -99,7 +103,7 @@ int MyProcessor::proc_exec(FILE *binFile)
 
 
 	free(m_code);
-	free(m_RAM);
+	//free(m_RAM);
 	return SUCCESS;
 }
 
@@ -125,6 +129,11 @@ void MyProcessor::dumpProc(const char *str) const
 
 	fprintf(m_dumpFile, "Processor[%p]\n{\n", this);
 	fprintf(m_dumpFile, "\tm_index = %u\n", m_index);
-	fprintf(m_dumpFile, "\tm_rax = %lg\n\tm_rbx = %lg\n\tm_rcx = %lg\n\tm_rdx = %lg\n}\n\n", m_rax, m_rbx, m_rcx, m_rdx);
-	
+	fprintf(m_dumpFile, "\tm_rax = %lg\n\tm_rbx = %lg\n\tm_rcx = %lg\n\tm_rdx = %lg\n\tm_rcx = %lg\n}\n\n", m_rax, m_rbx, m_rcx, m_rdx, m_rex);
+	fprintf(m_dumpFile, "\tm_RAM[%ld]\n\t{\n", m_ramSize);
+	for(int i = 0; i < m_ramSize; i++)
+	{
+		fprintf(m_dumpFile, "\t\t[%d] : %d\n", i, m_RAM[i]);
+	}
+	fprintf(m_dumpFile, "\t}\n}\n\n");
 }
