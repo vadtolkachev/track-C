@@ -1,0 +1,69 @@
+//rax - макс номер, rbx - текущий номер, rcx - послений элемент, rdx - предпоследний элемент
+
+//ввести номер элемента
+in
+pop rax
+
+push 1
+push 1
+pop rcx
+pop rdx
+
+push rax
+pop rbx
+
+//стек пуст, rbx = rax, rcx = 1, rdx = 1
+call fibo
+
+push rcx
+out
+
+end
+
+
+//функции
+:fibo
+//проверка на < 0
+push rax
+push 0
+jbe next0
+push -1
+pop rcx
+ret
+
+//если 0
+:next0
+push rax
+push 0
+jne next1
+ret
+
+//если 1
+:next1
+push rax
+push 1
+jne next2
+ret
+
+//если > 1
+:next2
+push rbx
+push 3
+ja endFibo
+
+//цикл
+push rbx
+push 1
+sub
+pop rbx
+call fibo
+
+:endFibo
+push rcx
+push rdx
+push rcx
+add
+pop rcx
+pop rdx
+
+ret

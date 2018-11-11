@@ -1,0 +1,125 @@
+//выводит на экран количество решений(0 - решений нет; 3 - бесконечно много реш.), дискриминант(если а>0), решения(если их одно или два)
+in
+pop rax
+in
+pop rbx
+in
+pop rcx
+
+call SolveSquare
+end
+
+
+
+:SolveLinear
+push rbx
+push 0
+je b_zero
+push rcx
+push rbx
+div
+push 1
+out
+out
+ret
+
+:b_zero
+push rcx
+push 0
+je bc_zero
+push 0
+out
+ret
+
+:bc_zero
+push 3
+out
+ret
+
+
+
+:SolveSquare
+push rax
+push 0
+jne next1
+call SolveLinear
+ret
+
+:next1
+//вычисление дискриминанта
+push rbx
+push rbx
+mul
+push 4
+push rax
+push rcx
+mul
+mul
+sub
+pop rdx
+
+push rdx
+push 0
+je d_zero
+
+push rdx
+push 0
+ja d_minus
+
+
+//d > 0
+push 2
+out
+push rdx
+out
+
+//вычисление первого корня
+push rbx
+push -1
+mul
+push rdx
+sqrt
+sub
+push 2
+div
+push rax
+div
+out
+
+//вычисление второго корня
+push rbx
+push -1
+mul
+push rdx
+sqrt
+add
+push 2
+div
+push rax
+div
+out
+
+ret
+
+//d = 0
+:d_zero
+push 1
+out
+push rdx
+out
+
+push rbx
+push -1
+mul
+push 2
+div
+push rax
+div
+out
+
+ret
+
+:d_minus
+push 0
+out
+ret
