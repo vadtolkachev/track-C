@@ -401,7 +401,7 @@ CMD_DEF(IN, 50,
 CMD_DEF(END, 6,
 	if(strncmp("end", m_buf, 3) == 0)
 	{
-		if(m_buf[3] != '\n')
+		if((m_buf[3] != '\n') && (m_buf[3] != 0))
 		{
 			printf("asm end err\n");
 			assert(0);
@@ -1424,7 +1424,7 @@ CMD_DEF(CALL, 43,
 CMD_DEF(RET, 44,
 	if(strncmp("ret", m_buf, 3) == 0)
 	{
-		if(m_buf[3] != '\n')
+		if((m_buf[3] != '\n') && (m_buf[3] != 0))
 		{
 			assert(0);
 			m_errno = PARSE_ERR;

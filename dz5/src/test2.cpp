@@ -6,10 +6,9 @@
 
 void exitErr(const char *str)
 {
-	puts(str);
+	printf("Exit with error: %s\n", str);
 	exit(EXIT_FAILURE);
 }
-
 
 void makeAsm(const char *asmStr, const char *txtStr, const char *binStr)
 {
@@ -38,7 +37,7 @@ void makeAsm(const char *asmStr, const char *txtStr, const char *binStr)
 
 	if(errno)
 	{
-		perror("closing files");
+		perror("1.closing files");
 		exitErr("makeAsm");
 	}
 }
@@ -73,7 +72,7 @@ void makeDAsm(const char *binStr, const char *txtStr, const char *asmResStr)
 
 	if(errno)
 	{
-		perror("closing files");
+		perror("2.closing files");
 		exitErr("makeDAsm");
 	}
 }
@@ -86,12 +85,16 @@ void makeProcExec(const char *binStr)
 		exitErr("fopen binFile");
 
 	MyProcessor proc;
-	proc.proc_exec(binFile);
+	int checkErr = proc.proc_exec(binFile);
+	if(checkErr == SUCCESS)
+		puts("3.Success");
+	else	
+		printf("3.Err = %d\n", checkErr);
 
 	fclose(binFile);
 	if(errno)
 	{
-		perror("closing file");
+		perror("3.closing file");
 		exitErr("makeProcExec");
 	}
 }
@@ -99,7 +102,7 @@ void makeProcExec(const char *binStr)
 
 int main()
 {	
-	char asmStr[25] = "code/SolveSquare.txt";
+	char asmStr[25] = "code/SolveSquare2.txt";
 	char txtStr[25] = "code/mach_code.txt";
 	char binStr[25] = "code/mach_code.bin";
 	char txtStr2[25] = "code/mach_code2.txt";
