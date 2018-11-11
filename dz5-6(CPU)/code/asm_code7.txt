@@ -1,0 +1,13 @@
+push 7
+push 5
+pop rax
+pop [rax]
+push [rax]
+out
+push [5]
+out
+push 123
+pop [8]
+push [8]
+out
+end
