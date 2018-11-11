@@ -27,7 +27,7 @@ private:
 	MyStack m_stack;
 	MyStack m_retStack;
 	char *m_code;
-	char m_RAM[RAM_SIZE];
+	double m_RAM[RAM_SIZE];
 	long int m_ramSize;
 	unsigned m_index;
 	int m_errno;

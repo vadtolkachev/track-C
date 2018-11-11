@@ -537,11 +537,8 @@ CMD_DEF(PUSH_P, 9,
 		if(pointer >= m_ramSize)
 			return OVERFLOW_ERR;
 		
-		double data;
-		char *pTmp = (char *)&data;
-		for(int i = 0; i < (int)sizeof(double); i++)
-			pTmp[i] = m_RAM[pointer+i];
-		
+		double data = m_RAM[pointer];
+	
 		int checkErr = m_stack.push(data);
 		assert(checkErr == SUCCESS);
 
@@ -662,6 +659,73 @@ CMD_DEF(PUSH_R, 10,
 	})
 
 
+CMD_DEF(POP_P, 14, 
+	if(strncmp("pop ", m_buf, 4) == 0)
+	{
+		if((m_buf[4] == '[') && ((isdigit(m_buf[5])) || (m_buf[5] == '-')))
+		{
+			char* pPosition = strchr(m_buf, '\n');
+			if(pPosition == nullptr)
+				assert(pPosition != nullptr);
+
+			long l_numb = strtol(&m_buf[5], &pPosition, 10);
+
+			if((errno != 0) || (pPosition == &m_buf[5]) || (*pPosition != ']') || (*(pPosition+1) != '\n'))
+			{
+				printf("pPos = %c = %d\n", *pPosition, *pPosition);
+				assert(0);
+				return PARSE_ERR;
+			}
+
+			char *tmp = (char *)&l_numb;			
+			fprintf(txtFile, "%x %ld\n", N_POP_P, l_numb);
+			fprintf(binFile, "%c", N_POP_P);
+			for(int i = 0; i < (int)sizeof(long); i++)
+				fprintf(binFile, "%c", tmp[i]);	
+
+			m_index += 1 + sizeof(long);
+		}
+	},
+	{
+		long *tmp = (long *)&m_buf[m_index+1];
+		fprintf(txtFile, "%x %ld\n", N_POP_P, *tmp);
+		fprintf(asmFile, "pop [%ld]\n", *tmp);
+
+		m_index += 1 + sizeof(long);
+	},
+	{
+		#ifndef S_DOUBLE
+		m_errno = TYPE_ERR;
+		assert(0);
+		return TYPE_ERR;
+		#endif
+	
+		if(m_stack.getSize() == 0)
+		{
+			m_errno = EMPTY_ERR;
+		}
+
+		long pointer = *((long *)&m_code[m_index+1]);
+		if(pointer >= m_ramSize)
+			return OVERFLOW_ERR;
+		
+		double data; 
+		m_stack.getTop(&data);
+		m_stack.pop();
+		m_RAM[pointer] = data;
+	
+		
+		assert(checkErr == SUCCESS);
+
+		char str[40] = "";
+
+		m_index += 1 + sizeof(long);
+		sprintf(str, "Proc popP m_RAM[%ld] %lg", pointer, data);
+
+		dumpProc(str);
+	})
+
+
 CMD_DEF(PUSH_PR, 11,
 	if(strncmp("push", m_buf, 4) == 0)
 	{
@@ -735,11 +799,7 @@ CMD_DEF(PUSH_PR, 11,
 		#endif
 
 		char nReg = m_code[m_index+1];
-		if(m_stack.getSize() == 0)
-		{
-			m_errno = EMPTY_ERR;
-			return EMPTY_ERR;
-		}
+
 		data_t *dPointer;
 		char dumpStr[20];
 
@@ -754,19 +814,19 @@ CMD_DEF(PUSH_PR, 11,
 			default : assert((printf("proc pushPR err\n"),0));
 		}
 
-		long pointer = (long)dPointer;
+		long pointer = (long)*dPointer;
 		if(pointer >= m_ramSize)
+		{
+			printf("pointer = %ld\nm_ramSize = %ld\n", pointer, m_ramSize);
 			return OVERFLOW_ERR;
-		
-		double data;
-		char *pTmp = (char *)&data;
-		for(int i = 0; i < (int)sizeof(double); i++)
-			pTmp[i] = m_RAM[pointer+i];
+		}
+
+		double data = m_RAM[pointer];
 		
 		int checkErr = m_stack.push(data);
 		assert(checkErr == SUCCESS);
 
-		m_index += 1 + sizeof(long);
+		m_index += 2;
 		dumpProc(dumpStr);
 
 		m_errno = checkErr;
@@ -901,13 +961,13 @@ CMD_DEF(POP_R, 12,
 CMD_DEF(POP_PR, 13,
 	if(strncmp("pop", m_buf, 3) == 0)
 	{
-		if(m_buf[4] == '[')
+		if((m_buf[4] == '[') && (m_buf[5] == 'r'))
 		{
-			if((m_buf[5] != 'r') || (m_buf[7] != 'x') || ((m_buf[8] != ']')) || (m_buf[9] != '\n'))
-				assert(0);			
+			if((m_buf[7] != 'x') || ((m_buf[8] != ']')) || (m_buf[9] != '\n'))
+				assert((printf("Proc popPR error1\n"), 0));			
 
 			if((m_buf[6] != 'a') && (m_buf[6] != 'b') && (m_buf[6] != 'c') && (m_buf[6] != 'd') && (m_buf[6] != 'e'))
-				assert(0);
+				assert((printf("Proc popPR error2\n"), 0));
 
 			char nReg;
 
@@ -958,7 +1018,7 @@ CMD_DEF(POP_PR, 13,
 			fprintf(asmFile, "rex]\n");
 			break;
 
-			default : assert(0);
+			default : assert((printf("Proc popPR error3\n"), 0));
 		}
 
 		m_index += 2;
@@ -969,13 +1029,13 @@ CMD_DEF(POP_PR, 13,
 		assert(0);
 		return TYPE_ERR;
 		#endif
-
-		char nReg = m_code[m_index+1];
 		if(m_stack.getSize() == 0)
 		{
-			m_errno = EMPTY_ERR;
 			return EMPTY_ERR;
 		}
+	
+		char nReg = m_code[m_index+1];
+
 		data_t *dPointer;
 		char dumpStr[20];
 
@@ -990,20 +1050,21 @@ CMD_DEF(POP_PR, 13,
 			default : assert(0);
 		}
 
-		long pointer = (long)dPointer;
+		long pointer = (long)*dPointer;
 		if(pointer >= m_ramSize)
+		{
+			printf("pointer = %ld\nm_ramSize = %ld\n", pointer, m_ramSize);
 			return OVERFLOW_ERR;
-		
+		}
+
 		data_t data;
 		m_stack.getTop(&data);
 		m_stack.pop();
 
-		char *pTmp = (char *)&data;
-		for(int i = 0; i < (int)sizeof(double); i++)
-			m_RAM[pointer+i] = pTmp[i];
+		m_RAM[pointer] = data;
 
 		dumpProc(dumpStr);
-		m_index += 1 + sizeof(long);
+		m_index += 2;
 	})
 
 

@@ -103,7 +103,7 @@ void makeProcExec(const char *binStr)
 
 int main()
 {	
-	char asmStr[25] = "code/asm_code7.txt";
+	char asmStr[25] = "code/Fibo2.txt";
 	char txtStr[25] = "code/mach_code.txt";
 	char binStr[25] = "code/mach_code.bin";
 	char txtStr2[25] = "code/mach_code2.txt";

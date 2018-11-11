@@ -8,7 +8,8 @@ MyProcessor::MyProcessor()
 	//m_RAM = nullptr;
 	//m_ramSize = 0;
 	m_ramSize = RAM_SIZE;
-	memset(m_RAM, 0, RAM_SIZE);
+	for(int i = 0; i < RAM_SIZE; i++)
+		m_RAM[i] = 0;
 
 	m_index = 0;
 	m_errno = SUCCESS;
@@ -133,7 +134,7 @@ void MyProcessor::dumpProc(const char *str) const
 	fprintf(m_dumpFile, "\tm_RAM[%ld]\n\t{\n", m_ramSize);
 	for(int i = 0; i < m_ramSize; i++)
 	{
-		fprintf(m_dumpFile, "\t\t[%d] : %d\n", i, m_RAM[i]);
+		fprintf(m_dumpFile, "\t\t[%d] : %lg\n", i, m_RAM[i]);
 	}
 	fprintf(m_dumpFile, "\t}\n}\n\n");
 }
