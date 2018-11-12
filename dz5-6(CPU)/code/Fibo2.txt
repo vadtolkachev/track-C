@@ -51,7 +51,7 @@ push rbx
 push 3
 ja endFibo
 
-//цикл
+//рекурсивный вызов
 push rbx
 push 1
 sub

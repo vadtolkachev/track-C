@@ -1,3 +1,4 @@
+//тест RAM
 push 7
 push 5
 pop rax
