@@ -567,9 +567,10 @@ CMD_DEF(PUSH_R, 10,
 				assert(0);
 			}
 			char nReg;
-			//#define REG_DEF(a,b,c) nReg = 1;
-			//#include "RegDef.hpp"
-			//#undef REG_DEF
+			/*#define REG_DEF(a,b,c) nReg = 1;
+			#include "RegDef.hpp"
+//REGinclude
+			#undef REG_DEF*/
 
 			/*char tmps[2] = ""
 			#define REG_DEF(big_name, small_name, numb) 	\
