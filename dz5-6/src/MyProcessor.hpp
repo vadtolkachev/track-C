@@ -18,6 +18,8 @@ public:
 
 	int readFile(FILE *file, char **str, long int *pSize);
 	int proc_exec(FILE *binFile);
+	int readDouble(double *numb);
+	int getNReg(unsigned index, char cReg);
 
 	void getDumpFileName(char str[45]) const;
 	void dumpProc(const char *str) const;

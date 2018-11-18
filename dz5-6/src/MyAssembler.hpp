@@ -28,6 +28,8 @@ public:
 	int assemble(FILE *asmFile, FILE *txtFile, FILE *binFile);
 	void findLabel(FILE *txtFile, FILE *binFile, char *label, char n_command);
 
+	int getNReg(int index, char *nReg);
+
 private:
 	char m_buf[ASM_BUF_SIZE];
 	int m_errno;

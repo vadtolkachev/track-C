@@ -34,9 +34,11 @@ int MyDisassembler::disassemble(FILE *binFile, FILE *txtFile, FILE *asmFile)
 		switch(m_buf[m_index])
 		{	
 
-			#define CMD_DEF(name, num, asm_code, disasm_code, proc_code) \
+			#define CMD_DEF(name, str, num, asm_code, disasm_code, proc_code) \
 			case N_##name : disasm_code; break;
+
 			#include "CmdDef.hpp"
+
 			#undef CMD_DEF
 	
 			default : return PARSE_ERR;

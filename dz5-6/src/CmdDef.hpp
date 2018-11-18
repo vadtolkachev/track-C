@@ -1,437 +1,423 @@
-CMD_DEF(ADD, 1,	
-	if(strncmp("add", m_buf, 3) == 0)
-	{
-		if(m_buf[3] != '\n')
-		{
-			printf("asm add err\n");
-			assert(0);
-			m_errno = PARSE_ERR;
-		}
-
-		fprintf(txtFile, "%x\n", N_ADD);
-		fprintf(binFile, "%c", N_ADD);		
-	
-		m_index++;
-	},
-	{
-		fprintf(txtFile, "%x\n", N_ADD);
-		fprintf(asmFile, "add\n");
-
-		m_index++;
-	},
-	{
-		if(m_stack.getSize() < 2)
-		{
-			m_errno = EMPTY_ERR;
-			return EMPTY_ERR;
-		}
-
-		data_t data1;
-		data_t data2;
-		
-		m_stack.getTop(&data1);
-		m_stack.pop();
-		m_stack.getTop(&data2);
-		m_stack.pop();
-
-		
-		int checkErr = m_stack.push(data1 + data2);
-
-		dumpProc("Proc add");
-		m_index++;
-		m_errno = checkErr;
-	})
-
-
-CMD_DEF(SUB, 2,
-	if(strncmp("sub", m_buf, 3) == 0)
-	{
-		if(m_buf[3] != '\n')
-		{
-			printf("asm sub err\n");
-			assert(0);
-			m_errno = PARSE_ERR;
-		}
-
-		fprintf(txtFile, "%x\n", N_SUB);
-		fprintf(binFile, "%c", N_SUB);
-
-		m_index++;
-	},
-	{
-		fprintf(txtFile, "%x\n", N_SUB);
-		fprintf(asmFile, "sub\n");
-
-		m_index++;
-	},
-	{
-		if(m_stack.getSize() < 2)
-		{
-			m_errno = EMPTY_ERR;
-			return EMPTY_ERR;
-		}
-
-		data_t data1;
-		data_t data2;
-		
-		m_stack.getTop(&data1);
-		m_stack.pop();
-		m_stack.getTop(&data2);
-		m_stack.pop();
-
-		
-		int checkErr = m_stack.push(data2 - data1);
-
-		dumpProc("Proc sub");
-		m_index++;
-		m_errno = checkErr;
-	})
-
-
-CMD_DEF(MUL, 3,
-	if(strncmp("mul", m_buf, 3) == 0)
-	{
-		if(m_buf[3] != '\n')
-		{
-			printf("asm mul err\n");
-			assert(0);
-			m_errno = PARSE_ERR;
-		}
-
-		fprintf(txtFile, "%x\n", N_MUL);
-		fprintf(binFile, "%c", N_MUL);	
-
-		m_index++;	
-	},
-	{
-		fprintf(txtFile, "%x\n", N_MUL);
-		fprintf(asmFile, "mul\n");
-
-		m_index++;
-	},
-	{
-		if(m_stack.getSize() < 2)
-		{
-			m_errno = EMPTY_ERR;
-			return EMPTY_ERR;
-		}
-
-		data_t data1;
-		data_t data2;
-		
-		m_stack.getTop(&data1);
-		m_stack.pop();
-		m_stack.getTop(&data2);
-		m_stack.pop();
-
-		
-		int checkErr = m_stack.push(data1 * data2);
-
-		dumpProc("Proc mul");
-		m_index++;
-		m_errno = checkErr;
-	})
-
-
-CMD_DEF(DIV, 4,
-	if(strncmp("div", m_buf, 3) == 0)
-	{
-		if(m_buf[3] != '\n')
-		{
-			printf("asm div err\n");
-			assert(0);
-			m_errno = PARSE_ERR;
-		}
-
-		fprintf(txtFile, "%x\n", N_DIV);
-		fprintf(binFile, "%c", N_DIV);	
-
-		m_index++;	
-	},
-	{
-		fprintf(txtFile, "%x\n", N_DIV);
-		fprintf(asmFile, "div\n");
-
-		m_index++;
-	},
-	{
-		if(m_stack.getSize() < 2)
-		{
-			m_errno = EMPTY_ERR;
-			return EMPTY_ERR;
-		}
-
-		data_t data1;
-		data_t data2;
-		
-		m_stack.getTop(&data1);
-		m_stack.pop();
-		m_stack.getTop(&data2);
-		m_stack.pop();
-
-
-		dumpProc("Proc div");
-		m_index++;	
-		#ifdef S_DOUBLE
-		int checkErr = m_stack.push(data2/data1);
-
-		m_errno = checkErr;
-		#else
-		m_errno = TYPE_ERR;
-		return TYPE_ERR;
-		#endif
-	})
-
-
-CMD_DEF(SIN, 40,
-	if(strncmp("sin", m_buf, 3) == 0)
-	{
-		if(m_buf[3] != '\n')
-		{
-			printf("asm sin err\n");
-			assert(0);
-			m_errno = PARSE_ERR;
-		}
-
-		fprintf(txtFile, "%x\n", N_SIN);
-		fprintf(binFile, "%c", N_SIN);	
-
-		m_index++;	
-	},
-	{
-		fprintf(txtFile, "%x\n", N_SIN);
-		fprintf(asmFile, "sin\n");
-
-		m_index++;
-	},
-	{
-		if(m_stack.getSize() < 1)
-		{
-			m_errno = EMPTY_ERR;
-			return EMPTY_ERR;
-		}
-
-		data_t data;
-		m_stack.getTop(&data);
-		m_stack.pop();
-
-
-		dumpProc("Proc sin");
-		m_index++;
-		#ifdef S_DOUBLE
-		int checkErr = m_stack.push(sin(data));
-
-		m_errno = checkErr;
-		#else
-		m_errno = TYPE_ERR;
-		return TYPE_ERR;
-		#endif
-	})
-
-
-CMD_DEF(COS, 41,
-	if(strncmp("cos", m_buf, 3) == 0)
-	{
-		if(m_buf[3] != '\n')
-		{
-			printf("asm cos err\n");
-			assert(0);
-			m_errno = PARSE_ERR;
-		}
-
-		fprintf(txtFile, "%x\n", N_COS);
-		fprintf(binFile, "%c", N_COS);	
-
-		m_index++;	
-	},
-	{
-		fprintf(txtFile, "%x\n", N_COS);
-		fprintf(asmFile, "cos\n");
-
-		m_index++;
-	},
-	{
-		if(m_stack.getSize() < 1)
-		{
-			m_errno = EMPTY_ERR;
-			return EMPTY_ERR;
-		}
-
-		data_t data;
-		m_stack.getTop(&data);
-		m_stack.pop();
-
-		dumpProc("Proc cos");	
-		m_index++;
-		#ifdef S_DOUBLE
-		int checkErr = m_stack.push(cos(data));
-
-		m_errno = checkErr;
-		#else
-		m_errno = TYPE_ERR;
-		return TYPE_ERR;
-		#endif
-	})
-
-
-CMD_DEF(SQRT, 42,
-	if(strncmp("sqrt", m_buf, 4) == 0)
-	{
-		if(m_buf[4] != '\n')
-		{
-			printf("asm sqrt err\n");
-			assert(0);
-			m_errno = PARSE_ERR;
-		}
-
-		fprintf(txtFile, "%x\n", N_SQRT);
-		fprintf(binFile, "%c", N_SQRT);	
-
-		m_index++;	
-	},
-	{
-		fprintf(txtFile, "%x\n", N_SQRT);
-		fprintf(asmFile, "sqrt\n");
-
-		m_index++;
-	},
-	{
-		if(m_stack.getSize() < 1)
-		{
-			m_errno = EMPTY_ERR;
-			return EMPTY_ERR;
-		}
-
-		data_t data;
-		m_stack.getTop(&data);
-		m_stack.pop();
-
-		dumpProc("Proc sqrt");	
-		m_index++;
-		#ifdef S_DOUBLE
-		int checkErr = m_stack.push(sqrt(data));
-
-		m_errno = checkErr;
-		#else
-		m_errno = TYPE_ERR;
-		return TYPE_ERR;
-		#endif
-	})
-
-
-CMD_DEF(OUT, 5,
-	({if(strncmp("out", m_buf, 3) == 0)
-	{
-		if(m_buf[3] != '\n')
-		{
-			printf("asm out err\n");
-			assert(0);
-			m_errno = PARSE_ERR;
-		}
-
-		fprintf(txtFile, "%x\n", N_OUT);
-		fprintf(binFile, "%c", N_OUT);	
-
-		m_index++;	
-	}}),
-	({
-		fprintf(txtFile, "%x\n", N_OUT);
-		fprintf(asmFile, "out\n");
-
-		m_index++;
-	}),
-	({
-		if(m_stack.getSize() < 1)
-		{
-			m_errno = EMPTY_ERR;
-			return EMPTY_ERR;
-		}
-
-		data_t data;
-		m_stack.getTop(&data);
-		m_stack.pop();
-
-		dumpProc("Proc out");
-		m_index++;
-		#ifdef S_DOUBLE
-		printf("Proc out : %lg\n", data);
-		#else
-		m_errno = TYPE_ERR;
-		return TYPE_ERR;
-		#endif
-	}))
-
-
-CMD_DEF(IN, 50,
-	if(strncmp("in", m_buf, 2) == 0)
-	{
-		if(m_buf[2] != '\n')
-		{
-			printf("asm in err\n");
-			assert(0);
-			m_errno = PARSE_ERR;
-		}
-
-		fprintf(txtFile, "%x\n", N_IN);
-		fprintf(binFile, "%c", N_IN);		
-
-		m_index++;
-	},
-	{
-		fprintf(txtFile, "%x\n", N_IN);
-		fprintf(asmFile, "in\n");
-
-		m_index++;
-	},
-	{
-		double tmp;
-		scanf("%lg", &tmp);
-
-		int checkErr = m_stack.push(tmp);
-		if(checkErr != SUCCESS)
-			return checkErr;
-
-		char str[25] = "";
-		sprintf(str, "Proc in : %lg", tmp);
-		dumpProc(str);
-		m_index++;
-	})
-
-
-CMD_DEF(END, 6,
-	if(strncmp("end", m_buf, 3) == 0)
-	{
-		if((m_buf[3] != '\n') && (m_buf[3] != 0))
-		{
-			printf("asm end err\n");
-			assert(0);
-			m_errno = PARSE_ERR;
-		}
-
-		fprintf(txtFile, "%x\n", N_END);
-		fprintf(binFile, "%c", N_END);	
-
-		m_index++;	
-	},
-	{
-		fprintf(txtFile, "%x\n", N_END);
-		fprintf(asmFile, "end\n");
-
-		m_index++;
-	},
-	{
-		m_index = size; 
-		dumpProc("Proc end");
-	})
-
-
-CMD_DEF(PUSH, 7,
-	if(strncmp("push", m_buf, 4) == 0)
+#ifndef REGS_DEF
+#define REGS_DEF 		\
+	REG_DEF(A, 'a', 20)	\
+	REG_DEF(B, 'b', 21)	\
+	REG_DEF(C, 'c', 22)	\
+	REG_DEF(D, 'd', 23)	\
+	REG_DEF(E, 'e', 24)
+#endif
+
+
+#define DEFAULT_ASM_CODE(nCmd) 		\
+{					\
+	fprintf(txtFile, "%x\n", nCmd);	\
+	fprintf(binFile, "%c", nCmd);	\
+					\
+	m_index++;			\
+}
+
+
+#define J_DEFAULT_ASM_CODE(nCmd, str) 			\
+{							\
+	int len = (int)strlen(str);			\
+	char label[MAX_LABEL_LEN] = "";			\
+	strcpy(label, &m_buf[len]);			\
+							\
+	findLabel(txtFile, binFile, label, nCmd);	\
+							\
+	m_index += 1 + sizeof(int);			\
+}
+
+
+#define LAB_ASM_CODE 							\
+{									\
+	int checkErr = OVERFLOW_ERR;					\
+									\
+	for(int i = 0; i < ASM_LABELS_SIZE; i++)			\
+	{								\
+		if(!strlen(m_labels[i].m_name))				\
+		{							\
+			m_labels[i].m_numb = m_index;			\
+			strcpy(m_labels[i].m_name, &m_buf[1]);		\
+									\
+			char *tmp = (char *)&m_index;			\
+			fprintf(txtFile, "%x %d\n", N_LAB, m_index);	\
+			fprintf(binFile, "%c", N_LAB);			\
+			for(int j = 0; j < (int)sizeof(int); j++)	\
+				fprintf(binFile, "%c", tmp[j]);		\
+									\
+			checkErr = SUCCESS;				\
+			break;						\
+		}							\
+	}								\
+									\
+	m_index += 1 + sizeof(int);					\
+	if(checkErr != SUCCESS)						\
+		m_errno = checkErr;					\
+}
+
+
+#define DEFAULT_DASM_CODE(nCmd, str) 	\
+{					\
+	fprintf(txtFile, "%x\n", nCmd);	\
+	fprintf(asmFile, "%s\n", str);	\
+					\
+	m_index++;			\
+}
+
+
+#define J_DEFAULT_DASM_CODE(nCmd, str) 		\
+{						\
+	int *tmp = (int *)&m_buf[m_index+1];	\
+						\
+	fprintf(txtFile, "%x %d\n", nCmd, *tmp);\
+	fprintf(asmFile, "%s%d\n", str, *tmp);	\
+						\
+	m_index += 1 + sizeof(int);		\
+}
+
+
+#define ADD_PROC_CODE				\
+{						\
+	if(m_stack.getSize() < 2)		\
+	{					\
+		m_errno = EMPTY_ERR;		\
+		return EMPTY_ERR;		\
+	}					\
+						\
+	data_t data1;				\
+	data_t data2;				\
+						\
+	m_stack.getTop(&data1);			\
+	m_stack.pop();				\
+	m_stack.getTop(&data2);			\
+	m_stack.pop();				\
+						\
+	int checkErr = m_stack.push(data1 + data2);\
+						\
+	dumpProc("Proc add");			\
+	m_index++;				\
+	m_errno = checkErr;			\
+}
+
+
+#define SUB_PROC_CODE				\
+{						\
+	if(m_stack.getSize() < 2)		\
+	{					\
+		m_errno = EMPTY_ERR;		\
+		return EMPTY_ERR;		\
+	}					\
+						\
+	data_t data1;				\
+	data_t data2;				\
+						\
+	m_stack.getTop(&data1);			\
+	m_stack.pop();				\
+	m_stack.getTop(&data2);			\
+	m_stack.pop();				\
+						\
+	int checkErr = m_stack.push(data2 - data1);\
+						\
+	dumpProc("Proc sub");			\
+	m_index++;				\
+	m_errno = checkErr;			\
+}
+
+
+#define MUL_PROC_CODE				\
+{						\
+	if(m_stack.getSize() < 2)		\
+	{					\
+		m_errno = EMPTY_ERR;		\
+		return EMPTY_ERR;		\
+	}					\
+						\
+	data_t data1;				\
+	data_t data2;				\
+						\
+	m_stack.getTop(&data1);			\
+	m_stack.pop();				\
+	m_stack.getTop(&data2);			\
+	m_stack.pop();				\
+						\
+	int checkErr = m_stack.push(data2*data1);\
+						\
+	dumpProc("Proc mul");			\
+	m_index++;				\
+	m_errno = checkErr;			\
+}
+
+
+#define DIV_PROC_CODE				\
+{						\
+	if(m_stack.getSize() < 2)		\
+	{					\
+		m_errno = EMPTY_ERR;		\
+		return EMPTY_ERR;		\
+	}					\
+						\
+	data_t data1;				\
+	data_t data2;				\
+						\
+	m_stack.getTop(&data1);			\
+	m_stack.pop();				\
+	m_stack.getTop(&data2);			\
+	m_stack.pop();				\
+						\
+	int checkErr = m_stack.push(data2/data1);\
+						\
+	dumpProc("Proc div");			\
+	m_index++;				\
+	m_errno = checkErr;			\
+}
+
+
+#define SIN_PROC_CODE				\
+{						\
+	if(m_stack.getSize() < 1)		\
+	{					\
+		m_errno = EMPTY_ERR;		\
+		return EMPTY_ERR;		\
+	}					\
+						\
+	data_t data;				\
+	m_stack.getTop(&data);			\
+	m_stack.pop();				\
+						\
+	dumpProc("Proc sin");			\
+	m_index++;				\
+						\
+	int checkErr = m_stack.push(sin(data));	\
+						\
+	m_errno = checkErr;			\
+}
+
+
+#define COS_PROC_CODE				\
+{						\
+	if(m_stack.getSize() < 1)		\
+	{					\
+		m_errno = EMPTY_ERR;		\
+		return EMPTY_ERR;		\
+	}					\
+						\
+	data_t data;				\
+	m_stack.getTop(&data);			\
+	m_stack.pop();				\
+						\
+	dumpProc("Proc cos");			\
+	m_index++;				\
+						\
+	int checkErr = m_stack.push(cos(data));	\
+						\
+	m_errno = checkErr;			\
+}
+
+
+#define SQRT_PROC_CODE				\
+{						\
+	if(m_stack.getSize() < 1)		\
+	{					\
+		m_errno = EMPTY_ERR;		\
+		return EMPTY_ERR;		\
+	}					\
+						\
+	data_t data;				\
+	m_stack.getTop(&data);			\
+	m_stack.pop();				\
+						\
+	dumpProc("Proc sqrt");			\
+	m_index++;				\
+						\
+	int checkErr = m_stack.push(sqrt(data));\
+						\
+	m_errno = checkErr;			\
+}
+
+
+#define OUT_PROC_CODE			\
+{					\
+	if(m_stack.getSize() < 1)	\
+	{				\
+		m_errno = EMPTY_ERR;	\
+		return EMPTY_ERR;	\
+	}				\
+					\
+	data_t data;			\
+	m_stack.getTop(&data);		\
+	m_stack.pop();			\
+					\
+	dumpProc("Proc out");		\
+	m_index++;			\
+					\
+	printf("Proc out : %lg\n", data);\
+}
+
+
+#define IN_PROC_CODE				\
+{						\
+	double tmp;				\
+	bool isDone = false;			\
+						\
+	while(!isDone)				\
+	{					\
+		if(readDouble(&tmp) == SUCCESS)	\
+			isDone = true;		\
+	}					\
+						\
+	int checkErr = m_stack.push(tmp);	\
+	if(checkErr != SUCCESS)			\
+		return checkErr;		\
+						\
+	char str[25] = "";			\
+	sprintf(str, "Proc in : %lg", tmp);	\
+	dumpProc(str);				\
+	m_index++;				\
+}
+
+
+#define END_PROC_CODE		\
+{				\
+	m_index = size; 	\
+	dumpProc("Proc end");	\
+}
+
+
+#define JMP_PROC_CODE					\
+{							\
+	int numb = *(int *)&(m_code[m_index+1]);	\
+	m_index = numb;					\
+							\
+	char dumpStr[60] = "";				\
+	sprintf(dumpStr, "Proc jmp : %d", numb);	\
+	dumpProc(dumpStr);				\
+}
+
+
+#define J_DEFAULT_PROC_CODE(str, sign)			\
+{							\
+	int *pTmp = (int *)&(m_code[m_index+1]);	\
+	int numb = *pTmp;				\
+	if(m_stack.getSize() < 2)			\
+	{						\
+		m_errno = EMPTY_ERR;			\
+		return EMPTY_ERR;			\
+	}						\
+							\
+	data_t data1;					\
+	data_t data2;					\
+							\
+	m_stack.getTop(&data1);				\
+	m_stack.pop();					\
+	m_stack.getTop(&data2);				\
+	m_stack.pop();					\
+							\
+	if(data1 sign data2)				\
+		m_index = numb;				\
+	else 						\
+		m_index += 1 + sizeof(int);		\
+							\
+	char dumpStr[60] = "";				\
+	sprintf(dumpStr, "Proc %s: %d if(%lg %s %lg)", \
+		str, numb, data1, #sign, data2);	\
+	dumpProc(dumpStr);				\
+}
+
+
+#define JW_PROC_CODE					\
+{							\
+	int *pTmp = (int *)&(m_code[m_index+1]);	\
+	int numb = *pTmp;				\
+	if(1)						\
+		m_index = numb;				\
+	else						\
+		m_index += 1 + sizeof(int);		\
+							\
+	char dumpStr[20] = "";				\
+	sprintf(dumpStr, "Proc jw : %d", numb);		\
+	dumpProc(dumpStr);				\
+}
+
+
+#define LAB_PROC_CODE			\
+{					\
+	dumpProc("Proc label");		\
+	m_index += 1 + sizeof(int);	\
+}
+
+
+#define RET_PROC_CODE				\
+{						\
+	if(m_retStack.getSize() == 0)		\
+	{					\
+		assert(0);			\
+		return EMPTY_ERR;		\
+	}					\
+						\
+	data_t data;				\
+	m_retStack.getTop(&data);		\
+	m_retStack.pop();			\
+						\
+	int numb = (int)data;			\
+	if(numb < 0)				\
+	{					\
+		assert(0);			\
+		return OVERFLOW_ERR;		\
+	}					\
+						\
+	m_index = numb;				\
+						\
+	char dumpStr[20] = "";			\
+	sprintf(dumpStr, "Proc ret : %d", numb);\
+	dumpProc(dumpStr);			\
+}
+
+
+#define CALL_PROC_CODE				\
+{						\
+	int numb = m_index + 1 + sizeof(int);	\
+	data_t tmp = (data_t)numb;		\
+	int checkErr = m_retStack.push(tmp);	\
+						\
+	if(checkErr != SUCCESS)			\
+		m_errno = checkErr;		\
+						\
+	int *pTmp = (int *)&(m_code[m_index+1]);\
+	m_index = *pTmp;			\
+						\
+	char dumpStr[20] = "";			\
+	sprintf(dumpStr, "Proc call : %d", numb);\
+	dumpProc(dumpStr);			\
+}
+
+
+CMD_DEF(ADD, "add", 1, DEFAULT_ASM_CODE(N_ADD), DEFAULT_DASM_CODE(N_ADD, "add"), ADD_PROC_CODE)
+
+CMD_DEF(SUB, "sub", 2, DEFAULT_ASM_CODE(N_SUB), DEFAULT_DASM_CODE(N_SUB, "sub"), SUB_PROC_CODE)
+
+CMD_DEF(MUL, "mul", 3, DEFAULT_ASM_CODE(N_MUL), DEFAULT_DASM_CODE(N_MUL, "mul"), MUL_PROC_CODE)
+
+CMD_DEF(DIV, "div", 4, DEFAULT_ASM_CODE(N_DIV), DEFAULT_DASM_CODE(N_DIV, "div"), DIV_PROC_CODE)
+
+CMD_DEF(SIN, "sin", 40, DEFAULT_ASM_CODE(N_SIN), DEFAULT_DASM_CODE(N_SIN, "sin"), SIN_PROC_CODE)
+
+CMD_DEF(COS, "cos", 41, DEFAULT_ASM_CODE(N_COS), DEFAULT_DASM_CODE(N_COS, "cos"), COS_PROC_CODE)
+
+CMD_DEF(SQRT, "sqrt", 42, DEFAULT_ASM_CODE(N_SQRT), DEFAULT_DASM_CODE(N_SQRT, "sqrt"), SQRT_PROC_CODE)
+
+CMD_DEF(OUT, "out", 5, DEFAULT_ASM_CODE(N_OUT), DEFAULT_DASM_CODE(N_OUT, "out"), OUT_PROC_CODE)
+
+CMD_DEF(IN, "in", 50, DEFAULT_ASM_CODE(N_IN), DEFAULT_DASM_CODE(N_IN, "in"), IN_PROC_CODE)
+
+CMD_DEF(END, "end", 6, DEFAULT_ASM_CODE(N_END), DEFAULT_DASM_CODE(N_END, "end"), END_PROC_CODE)
+
+CMD_DEF(PUSH, "push", 7,
 	{
 		if((isdigit(m_buf[5])) || (m_buf[5] == '-'))
 		{
 			double d;
-			char* pPosition = strchr(m_buf, '\n');
+			char *pPosition = strchr(m_buf, '\n');
 			if(pPosition == nullptr)
 				assert(pPosition != nullptr);
 
@@ -451,11 +437,7 @@ CMD_DEF(PUSH, 7,
 			for(int i = 0; i < (int)sizeof(double); i++)
 				fprintf(binFile, "%c", tmp[i]);
 
-			#ifdef S_DOUBLE
 			m_index += 1 + sizeof(double);
-			#else
-			assert(0);
-			#endif
 		}
 	},
 	{
@@ -463,11 +445,7 @@ CMD_DEF(PUSH, 7,
 		fprintf(txtFile, "%x %lg\n", N_PUSH, *tmp);
 		fprintf(asmFile, "push %lg\n", *tmp);
 
-		#ifdef S_DOUBLE
 		m_index += 1 + sizeof(double);
-		#else
-		assert(0);
-		#endif
 	},
 	{
 		double *pTmp = (double *)&m_code[m_index+1];
@@ -478,22 +456,15 @@ CMD_DEF(PUSH, 7,
 
 		char str[30] = "";
 
-		#ifdef S_DOUBLE
 		m_index += 1 + sizeof(double);
 		sprintf(str, "Proc push %lg", data);
-		#else
-		m_errno = TYPE_ERR;
-		assert(0);
-		return TYPE_ERR;
-		#endif
 
 		dumpProc(str);
 		m_errno = checkErr;
 	})
 
 
-CMD_DEF(PUSH_P, 9,
-	if(strncmp("push", m_buf, 4) == 0)
+CMD_DEF(PUSH_P, "push", 9,
 	{
 		if((m_buf[5] == '[') && ((isdigit(m_buf[6])) || (m_buf[6] == '-')))
 		{
@@ -527,12 +498,6 @@ CMD_DEF(PUSH_P, 9,
 		m_index += 1 + sizeof(long);
 	},
 	{
-		#ifndef S_DOUBLE
-		m_errno = TYPE_ERR;
-		assert(0);
-		return TYPE_ERR;
-		#endif
-
 		long pointer = *((long *)&m_code[m_index+1]);
 		if(pointer >= m_ramSize)
 			return OVERFLOW_ERR;
@@ -551,54 +516,23 @@ CMD_DEF(PUSH_P, 9,
 		m_errno = checkErr;
 	})
 
-CMD_DEF(PUSH_R, 10,
-	if(strncmp("push", m_buf, 4) == 0)
-	{
-		if(m_buf[5] == 'r')
-		{
-			if((m_buf[7] != 'x') || (m_buf[8] != '\n'))
-			{
-				printf("asm pushR err\n");
-				assert(0);			
-			}
-			if((m_buf[6] != 'a') && (m_buf[6] != 'b') && (m_buf[6] != 'c') && (m_buf[6] != 'd') && (m_buf[6] != 'e'))
-			{
-				printf("asm pushR err\n");
-				assert(0);
-			}
-			char nReg;
-			/*#define REG_DEF(a,b,c) nReg = 1;
-			#include "RegDef.hpp"
-//REGinclude
-			#undef REG_DEF*/
 
-			/*char tmps[2] = ""
-			#define REG_DEF(big_name, small_name, numb) 	\
-			strcpy(tmps, #small_name);			\
-			if(m_buf[6] == tmps[0])				\
-				nReg = N_R##big_name##X;
+#define PUSH_R_ASM_CODE 					\
+{								\
+	if(m_buf[5] == 'r')					\
+	{							\
+		char nReg;					\
+		getNReg(6, &nReg);				\
+								\
+		fprintf(txtFile, "%x %x\n", N_PUSH_R, nReg);	\
+		fprintf(binFile, "%c%c", N_PUSH_R, nReg);	\
+								\
+		m_index += 2;					\
+	}							\
+}
 
-			#include "RegDef.hpp"
 
-			#undef REG_DEF*/
-						
-			if(m_buf[6] == 'a')
-				nReg = N_RAX;
-			if(m_buf[6] == 'b')
-				nReg = N_RBX;
-			if(m_buf[6] == 'c')
-				nReg = N_RCX;
-			if(m_buf[6] == 'd')
-				nReg = N_RDX;
-			if(m_buf[6] == 'e')
-				nReg = N_REX;
-
-			fprintf(txtFile, "%x %x\n", N_PUSH_R, nReg);
-			fprintf(binFile, "%c%c", N_PUSH_R, nReg);
-
-			m_index += 2;
-		}
-	},
+CMD_DEF(PUSH_R, "push", 10, PUSH_R_ASM_CODE,
 	{
 		fprintf(txtFile, "%x ", N_PUSH_R);
 		fprintf(asmFile, "push ");
@@ -660,75 +594,7 @@ CMD_DEF(PUSH_R, 10,
 	})
 
 
-CMD_DEF(POP_P, 14, 
-	if(strncmp("pop ", m_buf, 4) == 0)
-	{
-		if((m_buf[4] == '[') && ((isdigit(m_buf[5])) || (m_buf[5] == '-')))
-		{
-			char* pPosition = strchr(m_buf, '\n');
-			if(pPosition == nullptr)
-				assert(pPosition != nullptr);
-
-			long l_numb = strtol(&m_buf[5], &pPosition, 10);
-
-			if((errno != 0) || (pPosition == &m_buf[5]) || (*pPosition != ']') || (*(pPosition+1) != '\n'))
-			{
-				printf("pPos = %c = %d\n", *pPosition, *pPosition);
-				assert(0);
-				return PARSE_ERR;
-			}
-
-			char *tmp = (char *)&l_numb;			
-			fprintf(txtFile, "%x %ld\n", N_POP_P, l_numb);
-			fprintf(binFile, "%c", N_POP_P);
-			for(int i = 0; i < (int)sizeof(long); i++)
-				fprintf(binFile, "%c", tmp[i]);	
-
-			m_index += 1 + sizeof(long);
-		}
-	},
-	{
-		long *tmp = (long *)&m_buf[m_index+1];
-		fprintf(txtFile, "%x %ld\n", N_POP_P, *tmp);
-		fprintf(asmFile, "pop [%ld]\n", *tmp);
-
-		m_index += 1 + sizeof(long);
-	},
-	{
-		#ifndef S_DOUBLE
-		m_errno = TYPE_ERR;
-		assert(0);
-		return TYPE_ERR;
-		#endif
-	
-		if(m_stack.getSize() == 0)
-		{
-			m_errno = EMPTY_ERR;
-		}
-
-		long pointer = *((long *)&m_code[m_index+1]);
-		if(pointer >= m_ramSize)
-			return OVERFLOW_ERR;
-		
-		double data; 
-		m_stack.getTop(&data);
-		m_stack.pop();
-		m_RAM[pointer] = data;
-	
-		
-		assert(checkErr == SUCCESS);
-
-		char str[40] = "";
-
-		m_index += 1 + sizeof(long);
-		sprintf(str, "Proc popP m_RAM[%ld] %lg", pointer, data);
-
-		dumpProc(str);
-	})
-
-
-CMD_DEF(PUSH_PR, 11,
-	if(strncmp("push", m_buf, 4) == 0)
+CMD_DEF(PUSH_PR, "push", 11,
 	{
 		if((m_buf[5] == '[') && (m_buf[6] == 'r'))
 		{
@@ -793,12 +659,6 @@ CMD_DEF(PUSH_PR, 11,
 		m_index += 2;
 	},
 	{
-		#ifndef S_DOUBLE
-		m_errno = TYPE_ERR;
-		assert(0);
-		return TYPE_ERR;
-		#endif
-
 		char nReg = m_code[m_index+1];
 
 		data_t *dPointer;
@@ -834,8 +694,7 @@ CMD_DEF(PUSH_PR, 11,
 	})
 
 
-CMD_DEF(POP, 8,
-	if(strncmp("pop", m_buf, 3) == 0)
+CMD_DEF(POP, "pop", 8,
 	{
 		if(m_buf[3] == '\n')
 		{
@@ -863,8 +722,68 @@ CMD_DEF(POP, 8,
 	})
 
 
-CMD_DEF(POP_R, 12,
-	if(strncmp("pop", m_buf, 3) == 0)
+
+CMD_DEF(POP_P, "pop ", 14, 
+	{
+		if((m_buf[4] == '[') && ((isdigit(m_buf[5])) || (m_buf[5] == '-')))
+		{
+			char* pPosition = strchr(m_buf, '\n');
+			if(pPosition == nullptr)
+				assert(pPosition != nullptr);
+
+			long l_numb = strtol(&m_buf[5], &pPosition, 10);
+
+			if((errno != 0) || (pPosition == &m_buf[5]) || (*pPosition != ']') || (*(pPosition+1) != '\n'))
+			{
+				printf("pPos = %c = %d\n", *pPosition, *pPosition);
+				assert(0);
+				return PARSE_ERR;
+			}
+
+			char *tmp = (char *)&l_numb;			
+			fprintf(txtFile, "%x %ld\n", N_POP_P, l_numb);
+			fprintf(binFile, "%c", N_POP_P);
+			for(int i = 0; i < (int)sizeof(long); i++)
+				fprintf(binFile, "%c", tmp[i]);	
+
+			m_index += 1 + sizeof(long);
+		}
+	},
+	{
+		long *tmp = (long *)&m_buf[m_index+1];
+		fprintf(txtFile, "%x %ld\n", N_POP_P, *tmp);
+		fprintf(asmFile, "pop [%ld]\n", *tmp);
+
+		m_index += 1 + sizeof(long);
+	},
+	{
+		if(m_stack.getSize() == 0)
+		{
+			m_errno = EMPTY_ERR;
+		}
+
+		long pointer = *((long *)&m_code[m_index+1]);
+		if(pointer >= m_ramSize)
+			return OVERFLOW_ERR;
+		
+		double data; 
+		m_stack.getTop(&data);
+		m_stack.pop();
+		m_RAM[pointer] = data;
+	
+		
+		assert(checkErr == SUCCESS);
+
+		char str[40] = "";
+
+		m_index += 1 + sizeof(long);
+		sprintf(str, "Proc popP m_RAM[%ld] %lg", pointer, data);
+
+		dumpProc(str);
+	})
+
+
+CMD_DEF(POP_R, "pop", 12,
 	{
 		if(m_buf[4] == 'r')
 		{
@@ -959,8 +878,7 @@ CMD_DEF(POP_R, 12,
 	})
 
 
-CMD_DEF(POP_PR, 13,
-	if(strncmp("pop", m_buf, 3) == 0)
+CMD_DEF(POP_PR, "pop", 13,
 	{
 		if((m_buf[4] == '[') && (m_buf[5] == 'r'))
 		{
@@ -1025,11 +943,6 @@ CMD_DEF(POP_PR, 13,
 		m_index += 2;
 	},
 	{
-		#ifndef S_DOUBLE
-		m_errno = TYPE_ERR;
-		assert(0);
-		return TYPE_ERR;
-		#endif
 		if(m_stack.getSize() == 0)
 		{
 			return EMPTY_ERR;
@@ -1069,462 +982,24 @@ CMD_DEF(POP_PR, 13,
 	})
 
 
-CMD_DEF(JMP, 30,
-	if(strncmp("jmp ", m_buf, 4) == 0)
-	{
-		char label[MAX_LABEL_LEN] = "";
-		strcpy(label, &m_buf[4]);
-		
-		findLabel(txtFile, binFile, label, N_JMP);
-		
-		m_index += 1 + sizeof(int);
-	},
-	{
-		int *tmp = (int *)&m_buf[m_index+1];
+CMD_DEF(JMP, "jmp ", 30, J_DEFAULT_ASM_CODE(N_JMP, "jmp "), J_DEFAULT_DASM_CODE(N_JMP, "jmp "), JMP_PROC_CODE)
 
-		fprintf(txtFile, "%x %d\n", N_JMP, *tmp);
-		fprintf(asmFile, "jmp %d\n", *tmp);
+CMD_DEF(JA, "ja ", 31, J_DEFAULT_ASM_CODE(N_JA, "ja "), J_DEFAULT_DASM_CODE(N_JA, "ja "), J_DEFAULT_PROC_CODE("ja ", >))
 
-		m_index += 1 + sizeof(int);
-	},
-	{
-		int *pTmp = (int *)&(m_code[m_index+1]);
-		int numb = *pTmp;
-		m_index = numb;
+CMD_DEF(JB, "jb ", 32, J_DEFAULT_ASM_CODE(N_JB, "jb "), J_DEFAULT_DASM_CODE(N_JB, "jb "), J_DEFAULT_PROC_CODE("jb ", <))
 
-		char dumpStr[20] = "";
-		sprintf(dumpStr, "Proc jmp : %d", numb);
-		dumpProc(dumpStr);
-	})
+CMD_DEF(JE, "je ", 33, J_DEFAULT_ASM_CODE(N_JE, "je "), J_DEFAULT_DASM_CODE(N_JE, "je "), J_DEFAULT_PROC_CODE("jne ", ==))
 
+CMD_DEF(JAE, "jae ", 34, J_DEFAULT_ASM_CODE(N_JAE, "jae "), J_DEFAULT_DASM_CODE(N_JAE, "jae "), J_DEFAULT_PROC_CODE("jae ", >=))
 
-CMD_DEF(JA, 31,
-	if(strncmp("ja ", m_buf, 3) == 0)
-	{
-		char label[MAX_LABEL_LEN] = "";
-		strcpy(label, &m_buf[3]);
-		
-		findLabel(txtFile, binFile, label, N_JA);
-		
-		m_index += 1 + sizeof(int);
-	},
-	{
-		int *tmp = (int *)&m_buf[m_index+1];
+CMD_DEF(JBE, "jbe ", 35, J_DEFAULT_ASM_CODE(N_JBE, "jbe "), J_DEFAULT_DASM_CODE(N_JBE, "jbe "), J_DEFAULT_PROC_CODE("jbe ", <=))
 
-		fprintf(txtFile, "%x %d\n", N_JA, *tmp);
-		fprintf(asmFile, "ja %d\n", *tmp);
+CMD_DEF(JNE, "jne ", 36, J_DEFAULT_ASM_CODE(N_JNE, "jne "), J_DEFAULT_DASM_CODE(N_JNE, "jne "), J_DEFAULT_PROC_CODE("jne ", !=))
 
-		m_index += 1 + sizeof(int);
-	},
-	{
-		int *pTmp = (int *)&(m_code[m_index+1]);
-		int numb = *pTmp;
-		if(m_stack.getSize() < 2)
-		{
-			m_errno = EMPTY_ERR;
-			return EMPTY_ERR;
-		}
+CMD_DEF(JW, "jw ", 37, J_DEFAULT_ASM_CODE(N_JW, "jw "), J_DEFAULT_DASM_CODE(N_JW, "jw "), JW_PROC_CODE)
 
-		data_t data1;
-		data_t data2;
-		
-		m_stack.getTop(&data1);
-		m_stack.pop();
-		m_stack.getTop(&data2);
-		m_stack.pop();
+CMD_DEF(LAB, ":", 38, LAB_ASM_CODE, J_DEFAULT_DASM_CODE(N_LAB, ":"), LAB_PROC_CODE)
 
-		if(data1 > data2)
-			m_index = numb;
-		else 
-			m_index += 1 + sizeof(int);
+CMD_DEF(CALL, "call ", 43, J_DEFAULT_ASM_CODE(N_CALL, "call "), J_DEFAULT_DASM_CODE(N_CALL, "call "), CALL_PROC_CODE)
 
-		char dumpStr[60] = "";
-		sprintf(dumpStr, "Proc ja : %d if(%lg > %lg)", numb, data1, data2);
-		dumpProc(dumpStr);
-	})
-
-
-CMD_DEF(JB, 32,
-	if(strncmp("jb ", m_buf, 3) == 0)
-	{
-		char label[MAX_LABEL_LEN] = "";
-		strcpy(label, &m_buf[3]);
-		
-		findLabel(txtFile, binFile, label, N_JB);
-		
-		m_index += 1 + sizeof(int);
-	},
-	{
-		int *tmp = (int *)&m_buf[m_index+1];
-
-		fprintf(txtFile, "%x %d\n", N_JB, *tmp);
-		fprintf(asmFile, "jb %d\n", *tmp);
-
-		m_index += 1 + sizeof(int);
-	},
-	{
-		int *pTmp = (int *)&(m_code[m_index+1]);
-		int numb = *pTmp;
-		if(m_stack.getSize() < 2)
-		{
-			m_errno = EMPTY_ERR;
-			return EMPTY_ERR;
-		}
-
-		data_t data1;
-		data_t data2;
-		
-		m_stack.getTop(&data1);
-		m_stack.pop();
-		m_stack.getTop(&data2);
-		m_stack.pop();
-
-		if(data1 < data2)
-			m_index = numb;
-		else 
-			m_index += 1 + sizeof(int);
-
-		char dumpStr[60] = "";
-		sprintf(dumpStr, "Proc jb : %d if(%lg < %lg)", numb, data1, data2);
-		dumpProc(dumpStr);
-	})
-
-
-CMD_DEF(JE, 33,
-	if(strncmp("je ", m_buf, 3) == 0)
-	{
-		char label[MAX_LABEL_LEN] = "";
-		strcpy(label, &m_buf[3]);
-		
-		findLabel(txtFile, binFile, label, N_JE);
-		
-		m_index += 1 + sizeof(int);
-	},
-	{
-		int *tmp = (int *)&m_buf[m_index+1];
-
-		fprintf(txtFile, "%x %d\n", N_JE, *tmp);
-		fprintf(asmFile, "je %d\n", *tmp);
-
-		m_index += 1 + sizeof(int);
-	},
-	{
-		int *pTmp = (int *)&(m_code[m_index+1]);
-		int numb = *pTmp;
-		if(m_stack.getSize() < 2)
-		{
-			m_errno = EMPTY_ERR;
-			return EMPTY_ERR;
-		}
-
-		data_t data1;
-		data_t data2;
-		
-		m_stack.getTop(&data1);
-		m_stack.pop();
-		m_stack.getTop(&data2);
-		m_stack.pop();
-
-		if(data1 == data2)
-			m_index = numb;
-		else 
-			m_index += 1 + sizeof(int);
-
-		char dumpStr[60] = "";
-		sprintf(dumpStr, "Proc je : %d if(%lg == %lg)", numb, data1, data2);
-		dumpProc(dumpStr);
-	})
-
-
-CMD_DEF(JAE, 34,
-	if(strncmp("jae ", m_buf, 4) == 0)
-	{
-		char label[MAX_LABEL_LEN] = "";
-		strcpy(label, &m_buf[4]);
-		
-		findLabel(txtFile, binFile, label, N_JAE);
-		
-		m_index += 1 + sizeof(int);
-	},
-	{
-		int *tmp = (int *)&m_buf[m_index+1];
-
-		fprintf(txtFile, "%x %d\n", N_JAE, *tmp);
-		fprintf(asmFile, "jae %d\n", *tmp);
-
-		m_index += 1 + sizeof(int);
-	},
-	{
-		int *pTmp = (int *)&(m_code[m_index+1]);
-		int numb = *pTmp;
-		if(m_stack.getSize() < 2)
-		{
-			m_errno = EMPTY_ERR;
-			return EMPTY_ERR;
-		}
-
-		data_t data1;
-		data_t data2;
-		
-		m_stack.getTop(&data1);
-		m_stack.pop();
-		m_stack.getTop(&data2);
-		m_stack.pop();
-
-		if(data1 >= data2)
-			m_index = numb;
-		else 
-			m_index += 1 + sizeof(int);
-
-		char dumpStr[60] = "";
-		sprintf(dumpStr, "Proc jae : %d if(%lg >= %lg)", numb, data1, data2);
-		dumpProc(dumpStr);
-	})
-
-
-CMD_DEF(JBE, 35,
-	if(strncmp("jbe ", m_buf, 4) == 0)
-	{
-		char label[MAX_LABEL_LEN] = "";
-		strcpy(label, &m_buf[4]);
-		
-		findLabel(txtFile, binFile, label, N_JBE);
-		
-		m_index += 1 + sizeof(int);
-	},
-	{
-		int *tmp = (int *)&m_buf[m_index+1];
-
-		fprintf(txtFile, "%x %d\n", N_JBE, *tmp);
-		fprintf(asmFile, "jbe %d\n", *tmp);
-
-		m_index += 1 + sizeof(int);
-	},
-	{
-		int *pTmp = (int *)&(m_code[m_index+1]);
-		int numb = *pTmp;
-		if(m_stack.getSize() < 2)
-		{
-			m_errno = EMPTY_ERR;
-			return EMPTY_ERR;
-		}
-
-		data_t data1;
-		data_t data2;
-		
-		m_stack.getTop(&data1);
-		m_stack.pop();
-		m_stack.getTop(&data2);
-		m_stack.pop();
-
-		if(data1 <= data2)
-			m_index = numb;
-		else 
-			m_index += 1 + sizeof(int);
-
-		char dumpStr[60] = "";
-		sprintf(dumpStr, "Proc jbe : %d if(%lg <= %lg)", numb, data1, data2);
-		dumpProc(dumpStr);
-	})
-
-
-CMD_DEF(JNE, 36,
-	if(strncmp("jne ", m_buf, 4) == 0)
-	{
-		char label[MAX_LABEL_LEN] = "";
-		strcpy(label, &m_buf[4]);
-		
-		findLabel(txtFile, binFile, label, N_JNE);
-		
-		m_index += 1 + sizeof(int);
-	},
-	{
-		int *tmp = (int *)&m_buf[m_index+1];
-
-		fprintf(txtFile, "%x %d\n", N_JNE, *tmp);
-		fprintf(asmFile, "jne %d\n", *tmp);
-
-		m_index += 1 + sizeof(int);
-	},
-	{
-		int *pTmp = (int *)&(m_code[m_index+1]);
-		int numb = *pTmp;
-		if(m_stack.getSize() < 2)
-		{
-			m_errno = EMPTY_ERR;
-			return EMPTY_ERR;
-		}
-
-		data_t data1;
-		data_t data2;
-		
-		m_stack.getTop(&data1);
-		m_stack.pop();
-		m_stack.getTop(&data2);
-		m_stack.pop();
-
-		if(data1 != data2)
-			m_index = numb;
-		else 
-			m_index += 1 + sizeof(int);
-
-		char dumpStr[60] = "";
-		sprintf(dumpStr, "Proc jne : %d if(%lg != %lg)", numb, data1, data2);
-		dumpProc(dumpStr);
-	})
-
-
-CMD_DEF(JW, 37,
-	if(strncmp("jw ", m_buf, 3) == 0)
-	{
-		char label[MAX_LABEL_LEN] = "";
-		strcpy(label, &m_buf[3]);
-		
-		findLabel(txtFile, binFile, label, N_JW);
-		
-		m_index += 1 + sizeof(int);
-	},
-	{
-		int *tmp = (int *)&m_buf[m_index+1];
-
-		fprintf(txtFile, "%x %d\n", N_JW, *tmp);
-		fprintf(asmFile, "jw %d\n", *tmp);
-
-		m_index += 1 + sizeof(int);
-	},
-	{
-		int *pTmp = (int *)&(m_code[m_index+1]);
-		int numb = *pTmp;
-		if(1)
-			m_index = numb;
-		else
-			m_index += 1 + sizeof(int);
-
-
-		char dumpStr[20] = "";
-		sprintf(dumpStr, "Proc jw : %d", numb);
-		dumpProc(dumpStr);
-	})
-
-
-CMD_DEF(LAB, 38,
-	if(m_buf[0] == ':')
-	{
-		int checkErr = OVERFLOW_ERR;
-		
-		for(int i = 0; i < ASM_LABELS_SIZE; i++)
-		{
-			if(!strlen(m_labels[i].m_name))
-			{
-				m_labels[i].m_numb = m_index;
-				strcpy(m_labels[i].m_name, &m_buf[1]);
-
-				char *tmp = (char *)&m_index;
-				fprintf(txtFile, "%x %d\n", N_LAB, m_index);
-				fprintf(binFile, "%c", N_LAB);
-				for(int j = 0; j < (int)sizeof(int); j++)
-					fprintf(binFile, "%c", tmp[j]);
-
-				checkErr = SUCCESS;
-				break;
-			}
-		}
-		
-		m_index += 1 + sizeof(int);
-		if(checkErr != SUCCESS)
-			m_errno = checkErr;
-	},
-	{
-		int *tmp = (int *)&m_buf[m_index+1];
-
-		fprintf(txtFile, "%x %d\n", N_LAB, *tmp);
-		fprintf(asmFile, ":%d\n", *tmp);
-
-		m_index += 1 + sizeof(int);
-	},
-	{
-		dumpProc("Proc label");
-		m_index += 1 + sizeof(int);
-	})
-
-
-CMD_DEF(CALL, 43,
-	if(strncmp("call ", m_buf, 5) == 0)
-	{
-		char label[MAX_LABEL_LEN] = "";
-		strcpy(label, &m_buf[5]);
-		
-		findLabel(txtFile, binFile, label, N_CALL);
-		
-		m_index += 1 + sizeof(int);
-	},
-	{
-		int *tmp = (int *)&m_buf[m_index+1];
-
-		fprintf(txtFile, "%x %d\n", N_CALL, *tmp);
-		fprintf(asmFile, "call %d\n", *tmp);
-
-		m_index += 1 + sizeof(int);
-	},
-	{
-		int numb = m_index + 1 + sizeof(int);
-		data_t tmp = (data_t)numb;
-		int checkErr = m_retStack.push(tmp);
-
-		if(checkErr != SUCCESS)
-			m_errno = checkErr;
-
-		int *pTmp = (int *)&(m_code[m_index+1]);
-		m_index = *pTmp;
-
-		char dumpStr[20] = "";
-		sprintf(dumpStr, "Proc call : %d", numb);
-		dumpProc(dumpStr);
-	})
-
-
-CMD_DEF(RET, 44,
-	if(strncmp("ret", m_buf, 3) == 0)
-	{
-		if((m_buf[3] != '\n') && (m_buf[3] != 0))
-		{
-			assert(0);
-			m_errno = PARSE_ERR;
-		}
-
-		fprintf(txtFile, "%x\n", N_RET);
-		fprintf(binFile, "%c", N_RET);		
-
-		m_index++;
-	},
-	{
-		fprintf(txtFile, "%x\n", N_RET);
-		fprintf(asmFile, "ret\n");
-
-		m_index++;
-	},
-	{
-		if(m_retStack.getSize() == 0)
-		{
-			assert(0);
-			return EMPTY_ERR;
-		}
-
-		data_t data;
-		m_retStack.getTop(&data);
-		m_retStack.pop();
-
-		int numb = (int)data;
-		if(numb < 0)
-		{
-			assert(0);
-			return OVERFLOW_ERR;
-		}
-
-		m_index = numb;
-
-		char dumpStr[20] = "";
-		sprintf(dumpStr, "Proc ret : %d", numb);
-		dumpProc(dumpStr);
-	})
-
+CMD_DEF(RET, "ret", 44, DEFAULT_ASM_CODE(N_RET), DEFAULT_DASM_CODE(N_RET, "ret"), RET_PROC_CODE)

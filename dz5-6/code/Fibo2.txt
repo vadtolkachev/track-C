@@ -31,21 +31,21 @@ push -1
 pop rcx
 ret
 
-//если 0
+//проверка на < 1
 :next0
 push rax
-push 0
-jne next1
+push 1
+jbe next1
 ret
 
-//если 1
+//проверка на < 2
 :next1
 push rax
-push 1
-jne next2
+push 2
+jbe next2
 ret
 
-//если > 1
+//если >= 2
 :next2
 push rbx
 push 3

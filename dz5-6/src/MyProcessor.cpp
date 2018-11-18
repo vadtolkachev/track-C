@@ -82,10 +82,13 @@ int MyProcessor::proc_exec(FILE *binFile)
 	{
 		switch(m_code[m_index])
 		{
-			#define CMD_DEF(name, num, asm_code, disasm_code, proc_code) \
+			#define CMD_DEF(name, str, num, asm_code, disasm_code, proc_code) \
 			case N_##name : proc_code; break;
+
 			#include "CmdDef.hpp"
+
 			#undef CMD_DEF
+
 
 
 			default : printf("m_index = %d\n", m_index); return PARSE_ERR;
@@ -105,6 +108,42 @@ int MyProcessor::proc_exec(FILE *binFile)
 
 	free(m_code);
 	//free(m_RAM);
+	return SUCCESS;
+}
+
+
+int MyProcessor::readDouble(double *numb)
+{
+	#ifndef S_DOUBLE
+	assert(0);
+	#endif
+
+	double d;
+	char doubleStr[50];
+	char *checkStr = fgets(doubleStr, 50, stdin);
+	if((checkStr != doubleStr))
+	{
+		printf("readDouble error 1\n");	
+		return READ_ERR;
+	}
+
+	char *pPosition = strchr(doubleStr, '\n');
+	if(pPosition == nullptr)
+	{
+		printf("readDouble error 2\n");
+		return READ_ERR;
+	}
+
+	d = strtod(doubleStr, &pPosition);
+
+	if((errno != 0) || (pPosition == doubleStr) || (*pPosition != '\n'))
+	{
+		printf("error : pPos = %c = %d\nPrint double\n", *pPosition, *pPosition);
+		return READ_ERR;
+	}
+
+	*numb = d;		
+
 	return SUCCESS;
 }
 

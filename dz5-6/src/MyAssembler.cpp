@@ -22,9 +22,12 @@ int MyAssembler::assemble(FILE *asmFile, FILE *txtFile, FILE *binFile)
 		m_index = 0;
 		while((check = fgets(m_buf, ASM_BUF_SIZE, asmFile), check != nullptr))
 		{
-			#define CMD_DEF(name, num, asm_code, disasm_code, proc_code) \
+			#define CMD_DEF(name, str, num, asm_code, disasm_code, proc_code) 	\
+			if(strncmp(str, m_buf, strlen(str)) == 0)				\
 			asm_code;
+
 			#include "CmdDef.hpp"
+
 			#undef CMD_DEF
 
 
@@ -57,3 +60,35 @@ void MyAssembler::findLabel(FILE *txtFile, FILE *binFile, char *label, char n_co
 	}
 }
 
+int MyAssembler::getNReg(int index, char *pnReg)
+{
+	char nReg;
+
+	if((m_buf[index+1] != 'x') || (m_buf[index+2] != '\n'))	
+	{						
+		printf("asm getNReg err\n");		
+		assert(0);				
+	}
+
+	#define REG_DEF(big_name, small_name, numb) 	\
+	(m_buf[index] != small_name) &&
+	if(REGS_DEF (1))
+	{						
+		printf("asm getNReg err\n");		
+		assert(0);				
+	}
+	#undef REG_DEF
+
+
+	#define REG_DEF(big_name, small_name, numb) 	\
+	if(m_buf[index] == small_name)			\
+		nReg = N_R##big_name##X;
+
+	REGS_DEF
+
+	#undef REG_DEF
+
+	*pnReg = nReg;
+
+	return SUCCESS;
+}
