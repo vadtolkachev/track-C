@@ -19,7 +19,7 @@ cov:
 	./a.out
 	lcov --capture --directory . --output-file cov.info
 	genhtml cov.info --output-directory covinfo
-	firefox /home/vad/Desktop/code/ded1sem/dz4/covinfo/index.html
+	firefox /home/vad/Desktop/code/ded1sem/dz5-6/covinfo/index.html
 
 cleanCov:
 	rm -rf *gcda *.info covinfo 
