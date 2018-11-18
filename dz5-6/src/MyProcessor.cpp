@@ -148,6 +148,31 @@ int MyProcessor::readDouble(double *numb)
 }
 
 
+int MyProcessor::getNReg(unsigned index, data_t **pdata, char *pcReg)
+{
+	char tmps[2] = "";
+	char cReg;
+	data_t *data;
+
+	#define REG_DEF(big_name, small_name, numb) 	\
+	case N_R##big_name##X : data = &m_r##small_name##x; strcpy(tmps, #small_name); cReg = tmps[0]; break;
+
+	switch(m_code[index])
+	{
+		REGS_DEF
+
+		default : assert(0);
+	}
+
+	#undef REG_DEF
+
+	*pcReg = cReg;
+	*pdata = data;
+
+	return SUCCESS;
+}
+
+
 void MyProcessor::getDumpFileName(char str[45]) const
 {
 	char str1[45] = "logs/procInfo[";

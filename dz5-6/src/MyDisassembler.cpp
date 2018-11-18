@@ -49,3 +49,28 @@ int MyDisassembler::disassemble(FILE *binFile, FILE *txtFile, FILE *asmFile)
 	return SUCCESS;
 }
 
+
+int MyDisassembler::getCReg(int index, char *pcReg)
+{
+	char cReg;
+	char tmps[2] = "";
+
+	#define REG_DEF(big_name, small_name, numb) 	\
+	case N_R##big_name##X : strcpy(tmps, #small_name); cReg = tmps[0]; break;
+
+	switch(m_buf[index])
+	{
+		REGS_DEF
+
+		default : assert(0);
+	}
+
+	#undef REG_DEF
+
+	*pcReg = cReg;
+
+	return SUCCESS;
+}
+
+
+

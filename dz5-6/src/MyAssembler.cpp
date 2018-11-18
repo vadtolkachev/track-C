@@ -63,15 +63,16 @@ void MyAssembler::findLabel(FILE *txtFile, FILE *binFile, char *label, char n_co
 int MyAssembler::getNReg(int index, char *pnReg)
 {
 	char nReg;
+	char tmps[2] = "";
 
-	if((m_buf[index+1] != 'x') || (m_buf[index+2] != '\n'))	
+	if((m_buf[index+1] != 'x'))	
 	{						
 		printf("asm getNReg err\n");		
 		assert(0);				
 	}
 
 	#define REG_DEF(big_name, small_name, numb) 	\
-	(m_buf[index] != small_name) &&
+	(strcpy(tmps, #small_name), (m_buf[index] != tmps[0])) &&
 	if(REGS_DEF (1))
 	{						
 		printf("asm getNReg err\n");		
@@ -81,7 +82,8 @@ int MyAssembler::getNReg(int index, char *pnReg)
 
 
 	#define REG_DEF(big_name, small_name, numb) 	\
-	if(m_buf[index] == small_name)			\
+	strcpy(tmps, #small_name);			\
+	if(m_buf[index] == tmps[0])			\
 		nReg = N_R##big_name##X;
 
 	REGS_DEF

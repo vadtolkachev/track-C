@@ -16,6 +16,8 @@ public:
 	int readFile(FILE *file, char **str, long int *pSize);
 	int disassemble(FILE *binFile, FILE *txtFile, FILE *asmFile);
 
+	int getCReg(int index, char *cReg);
+
 private:
 	char *m_buf;
 	int m_index;
