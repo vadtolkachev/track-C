@@ -66,6 +66,10 @@ int MyProcessor::readFile(FILE *file, char **str, long int *pSize)
 
 int MyProcessor::proc_exec(FILE *binFile)
 {
+	#ifndef S_DOUBLE
+	assert(0);
+	#endif
+
 	long int size;
 	int checkErr = readFile(binFile, &m_code, &size);
 	if(checkErr != SUCCESS)
@@ -88,8 +92,6 @@ int MyProcessor::proc_exec(FILE *binFile)
 			#include "CmdDef.hpp"
 
 			#undef CMD_DEF
-
-
 
 			default : printf("m_index = %d\n", m_index); return PARSE_ERR;
 		}
