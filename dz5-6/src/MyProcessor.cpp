@@ -103,7 +103,7 @@ int MyProcessor::proc_exec(FILE *binFile)
 			m_stack.~MyStack();
 			m_retStack.~MyStack();
 			assert(0);
-			return PARSE_ERR;
+			return m_errno;
 		}
 	}
 
