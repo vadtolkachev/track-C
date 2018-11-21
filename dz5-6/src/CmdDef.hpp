@@ -6,7 +6,7 @@
 	REG_DEF(E, e, 24)
 
 
-#define DEFAULT_ASM_CODE(nCmd) 		\
+#define DEFAULT_ASM_CODE(nCmd)		\
 {					\
 	fprintf(txtFile, "%x\n", nCmd);	\
 	fprintf(binFile, "%c", nCmd);	\
