@@ -15,7 +15,7 @@
 }
 
 
-#define J_DEFAULT_ASM_CODE(nCmd, str) 			\
+#define J_DEFAULT_ASM_CODE(nCmd, str)			\
 {							\
 	int len = (int)strlen(str);			\
 	char label[MAX_LABEL_LEN] = "";			\
@@ -119,7 +119,7 @@
 }
 
 
-#define POP_P_ASM_CODE 								\
+#define POP_P_ASM_CODE								\
 {										\
 	if((m_buf[4] == '[') && ((isdigit(m_buf[5])) || (m_buf[5] == '-')))	\
 	{									\
@@ -148,7 +148,7 @@
 }
 
 
-#define POP_R_ASM_CODE 						\
+#define POP_R_ASM_CODE						\
 {								\
 	if(m_buf[4] == 'r')					\
 	{							\
@@ -214,7 +214,7 @@
 }
 
 
-#define J_DEFAULT_DASM_CODE(nCmd, str) 		\
+#define J_DEFAULT_DASM_CODE(nCmd, str)		\
 {						\
 	int *tmp = (int *)&m_buf[m_index+1];	\
 						\
@@ -269,7 +269,7 @@
 }
 
 
-#define POP_P_DASM_CODE		 			\
+#define POP_P_DASM_CODE					\
 {							\
 	long *tmp = (long *)&m_buf[m_index+1];		\
 	fprintf(txtFile, "%x %ld\n", N_POP_P, *tmp);	\
@@ -279,7 +279,7 @@
 }
 
 
-#define POP_R_DASM_CODE		 			\
+#define POP_R_DASM_CODE					\
 {							\
 	char cReg;					\
 	getCReg(m_index+1, &cReg);			\
