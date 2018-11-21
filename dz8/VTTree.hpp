@@ -29,6 +29,9 @@ public:
 	void pdump(FILE *dotfile);
 	void pdumpNode(VTTreeNode *node, FILE *dotfile);
 
+	void tdump(FILE *file);
+	void tdumpNode(FILE *file, VTTreeNode *node);
+
 private:
 	int m_canary;
 	VTTreeNode *m_root;

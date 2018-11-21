@@ -139,3 +139,30 @@ void VTTree::pdumpNode(VTTreeNode *node, FILE *dotfile)
 		pdumpNode(node->getRight(), dotfile);
 	}
 }
+
+
+void VTTree::tdump(FILE *file)
+{
+	tdumpNode(file, m_root);
+}
+
+
+void VTTree::tdumpNode(FILE *file, VTTreeNode *node)
+{
+	fprintf(file, "(");
+
+	if(!node)
+		fprintf(file, "nil");
+	else
+	{
+		fprintf(file, "%d", node->getNumb());
+		if(node->getLeft() || node->getRight())
+		{
+			tdumpNode(file, node->getLeft());
+			tdumpNode(file, node->getRight());
+		}
+	}
+
+	fprintf(file, ")");
+}
+

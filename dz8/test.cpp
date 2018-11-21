@@ -38,5 +38,12 @@ int main()
 	tmpTree.pdump(file2);
 	system("dot -T jpg -o dumps/tree2.jpg dumps/tree2.dot &");
 
+	FILE *file3 = fopen("dumps/tree3.txt", "w");
+	tmpTree.tdump(file3);
+
+	fclose(file1);
+	fclose(file2);
+	fclose(file3);
+
 	return 0;
 }
