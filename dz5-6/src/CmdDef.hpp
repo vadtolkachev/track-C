@@ -269,7 +269,7 @@
 }
 
 
-#define POP_P_DASM_CODE				\
+#define POP_P_DASM_CODE					\
 {							\
 	long *tmp = (long *)&m_buf[m_index+1];		\
 	fprintf(txtFile, "%x %ld\n", N_POP_P, *tmp);	\
