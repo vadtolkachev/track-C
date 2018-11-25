@@ -148,13 +148,14 @@ void VTree::tdump(const char *str)
 
 void VTree::tdumpNode(FILE *file, VTreeNode *node)
 {
-	fprintf(file, "(");
-
+	static int indent = -1; indent++;
+	fprintf(file, "%*s{", indent*4, "");
+	
 	if(!node)
 		fprintf(file, "nil");
 	else
 	{
-		fprintf(file, "%s", node->m_str);
+		fprintf(file, "%s\n", node->m_str);
 		if(node->m_left || node->m_right)
 		{
 			tdumpNode(file, node->m_left);
@@ -162,7 +163,8 @@ void VTree::tdumpNode(FILE *file, VTreeNode *node)
 		}
 	}
 
-	fprintf(file, ")");
+	fprintf(file, "%*s}\n", indent*4, "");
+	indent--;
 }
 
 /*
