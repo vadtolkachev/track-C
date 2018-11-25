@@ -13,6 +13,7 @@ class VTTree
 {
 public:
 	VTTree();
+	VTTree(FILE *file);
 	~VTTree();
 
 	VTTreeNode *getRoot() const;
@@ -32,7 +33,10 @@ public:
 	void tdump(FILE *file);
 	void tdumpNode(FILE *file, VTTreeNode *node);
 
+	void parseTree(FILE *file, VTTreeNode **node);
+
 private:
 	int m_canary;
+	int m_errno;
 	VTTreeNode *m_root;
 };

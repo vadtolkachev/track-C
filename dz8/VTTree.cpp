@@ -1,11 +1,43 @@
 #include "VTTree.hpp"
+#include "../dz4/defines.hpp"
 #include <stdio.h>
+#include <sys/stat.h>
+#include <stdlib.h>
 
 
 VTTree::VTTree()
 {
 	m_root = nullptr;
 	m_canary = T_CANARY;
+	m_errno = SUCCESS;
+}
+
+
+VTTree::VTTree(FILE *file)
+{
+	m_root = nullptr;
+	m_canary = T_CANARY;
+
+	struct stat tmp;
+	fstat(fileno(file), &tmp);
+	long int size = tmp.st_size;
+
+	char *bigString = (char *)calloc(size, sizeof(char));
+	if((!errno) && (bigString == nullptr))
+		errno = ENOMEM;
+	
+	int checkErr = fread(bigString, size, 1, file);
+	if(checkErr != 1)
+	{
+		printf("size = %ld\n", size);
+		printf("checkErr = %d\n", checkErr);
+		m_errno = READ_ERR;
+		
+	}
+
+	parseTree(file, &m_root);
+
+	free(bigString);
 }
 
 
@@ -58,7 +90,10 @@ int VTTree::push(const int &numb)
 
 bool VTTree::isOK()
 {
-	return checkNode(m_root);
+	if(m_canary == T_CANARY)
+		return checkNode(m_root);
+	
+	return false;
 }
 
 
@@ -94,8 +129,7 @@ void VTTree::freeMem(VTTreeNode *node)
 void VTTree::dump(FILE *dotfile)
 {
 	fprintf(dotfile, "digraph G\n{\n");
-	puts("1");
-	pdumpNode(m_root, dotfile);
+	dumpNode(m_root, dotfile);
 	fprintf(dotfile, "}");
 }
 
@@ -119,8 +153,7 @@ void VTTree::dumpNode(VTTreeNode *node, FILE *dotfile)
 void VTTree::pdump(FILE *dotfile)
 {
 	fprintf(dotfile, "digraph G\n{\n");
-	puts("1");
-	dumpNode(m_root, dotfile);
+	pdumpNode(m_root, dotfile);
 	fprintf(dotfile, "}");
 }
 
@@ -166,3 +199,11 @@ void VTTree::tdumpNode(FILE *file, VTTreeNode *node)
 	fprintf(file, ")");
 }
 
+
+//TODO
+void VTTree::parseTree(FILE *file, VTTreeNode **node)
+{
+	if(!(*node))
+		return;
+
+}
