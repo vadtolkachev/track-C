@@ -1,6 +1,4 @@
-#include "VAkinator.hpp"
-#include <stdio.h>
-#include <stdlib.h>
+#include "VTree.hpp"
 
 
 void exitErr(const char *str)
@@ -12,17 +10,14 @@ void exitErr(const char *str)
 
 int main()
 {
-	VTreeNode node;
-	char str[512] = "Привет мир";
-	node.m_str = str;
-	VTree tmpTree(&node);
-	
-	tmpTree.dump("dumps/tree1.dot");
-	int checkErr = tmpTree.checkError();
+	VTree tree;
+	tree.parseTree("tree3.txt");
+
+	tree.dump("dumps/tree3.dot");
+	int checkErr = tree.checkError();
 	if(checkErr != SUCCESS)
 		exitErr("dump");
 
-	puts("hello world");
-
+	printf("end\n");
 	return 0;
 }
