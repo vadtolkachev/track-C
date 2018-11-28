@@ -16,12 +16,14 @@ int main()
 
 	VAkinator ak(&tree);
 	char ans = 'y';
+	char check;
 	while(ans == 'y')
 	{
 		ak.search(tree.getRoot());
 		printf("ещё раз?\n");
 		ans = getchar();
-		getchar();
+		check = getchar();
+		assert(check == '\n');
 		//printf("main:ans = %c\n", ans);
 	}
 

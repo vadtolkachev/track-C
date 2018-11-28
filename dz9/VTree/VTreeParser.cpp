@@ -31,14 +31,15 @@ int VTreeParser::parseTree(const char *file_name, VTree *tree)
 
 int VTreeParser::parseNode(FILE *file, VTreeNode *node)
 {
-	int checkErr = checkEndl();
+	char *pEnd;
+	int checkErr = checkEndl(&pEnd);
 	if(checkErr != SUCCESS) 
 		return checkErr;
 
 	char *pPosition = strchr(m_buf, '{');
 	if(pPosition)
 	{
-		tStrCpy(node, pPosition);
+		qtStrCpy(node, pPosition, pEnd);
 		readFile(file);
 
 		pPosition = strchr(m_buf, '}');
@@ -73,7 +74,7 @@ int VTreeParser::parseNode(FILE *file, VTreeNode *node)
 }
 
 
-int VTreeParser::checkEndl()
+int VTreeParser::checkEndl(char **pRes)
 {
 	char *pPosition = strchr(m_buf, '\n');
 	if(!pPosition)
@@ -84,6 +85,7 @@ int VTreeParser::checkEndl()
 		return PARSE_ERR;
 	}
 
+	*pRes = pPosition;
 	return SUCCESS;
 }
 
@@ -95,6 +97,14 @@ void VTreeParser::readFile(FILE *file)
 }
 
 
+void VTreeParser::qtStrCpy(VTreeNode *node, char *pPosition1, char *pPosition2)
+{
+	*pPosition2 = 0;
+	node->setStr(pPosition1+1);
+}
+
+
+/*
 void VTreeParser::tStrCpy(VTreeNode *node, char *pPosition)
 {
 	int len = strlen(pPosition)-2;
@@ -107,3 +117,4 @@ void VTreeParser::tStrCpy(VTreeNode *node, char *pPosition)
 
 	delete[] newStr;
 }
+*/

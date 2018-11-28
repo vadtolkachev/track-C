@@ -22,7 +22,8 @@ int VAkinator::search(VTreeNode *node)
 
 	printf("%s?\n", node->getStr());
 	char ans = getchar();
-	getchar();
+	char check = getchar();
+	assert(check == '\n');
 	//printf("ak:ans = %c\n", ans);
 	
 	if(node->getRight())
