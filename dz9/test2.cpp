@@ -12,14 +12,6 @@ int main()
 {
 	VTree tree;
 	VTree tree2;
-	VTreeNode node1;
-	VTreeNode node2;
-	VTreeNode node3;
-	VTreeNode node4;
-	node1.setStr("1");
-	node2.setStr("2");
-	node3.setStr("3");
-	node4.setStr("4");
 
 	tree2.createRoot();
 	tree2.getRoot()->setStr("1");
@@ -41,8 +33,6 @@ int main()
 	int checkErr = tree.checkError();
 	if(checkErr != SUCCESS)
 		exitErr("dump");
-
-	printf("success\n");
 
 	return 0;
 }

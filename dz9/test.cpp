@@ -18,6 +18,5 @@ int main()
 	if(checkErr != SUCCESS)
 		exitErr("dump");
 
-	printf("end\n");
 	return 0;
 }
