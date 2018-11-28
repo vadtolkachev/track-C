@@ -13,6 +13,12 @@ VTree *VAkinator::getTree() const
 }
 
 
+int VAkinator::search()
+{
+	return search(m_tree->getRoot());
+}
+
+
 int VAkinator::search(VTreeNode *node)
 {
 	if((node->getRight() == nullptr) != (node->getLeft() == nullptr))
@@ -24,7 +30,6 @@ int VAkinator::search(VTreeNode *node)
 	char ans = getchar();
 	char check = getchar();
 	assert(check == '\n');
-	//printf("ak:ans = %c\n", ans);
 	
 	if(node->getRight())
 	{

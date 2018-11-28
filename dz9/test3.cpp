@@ -19,13 +19,13 @@ int main()
 	char check;
 	while(ans == 'y')
 	{
-		ak.search(tree.getRoot());
+		ak.search();
 		printf("ещё раз?\n");
 		ans = getchar();
 		check = getchar();
 		assert(check == '\n');
-		//printf("main:ans = %c\n", ans);
 	}
+
 
 	tree.dump("dumps/aktree.dot");
 	int checkErr = tree.checkError();

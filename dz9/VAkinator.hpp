@@ -8,6 +8,7 @@ public:
 	VAkinator(VTree *tree);
 	VTree *getTree() const;
 
+	int search();
 	int search(VTreeNode *node);
 
 private:

@@ -1,9 +1,8 @@
-a.out
 html
 cov.info
 covinfo
 *gcda
 *gcno
-valgrind_info.log
+*.log
 *.o
 *.out
