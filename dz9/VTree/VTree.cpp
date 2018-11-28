@@ -89,9 +89,9 @@ void VTree::dumpNode(const VTreeNode *node, FILE *dotfile)
 	{
 		fprintf(dotfile, "\t\"%s\"\n", node->getStr());
 		if(node->getLeft())
-			fprintf(dotfile, "\t\"%s\"->\"%s\"\n", node->getStr(), node->getLeft()->getStr());
+			fprintf(dotfile, "\t\"%s\"->\"%s\"[label = \"yes\"]\n", node->getStr(), node->getLeft()->getStr());
 		if(node->getRight())
-			fprintf(dotfile, "\t\"%s\"->\"%s\"\n", node->getStr(), node->getRight()->getStr());
+			fprintf(dotfile, "\t\"%s\"->\"%s\"[label = \"no\"]\n", node->getStr(), node->getRight()->getStr());
 
 		dumpNode(node->getLeft(), dotfile);
 		dumpNode(node->getRight(), dotfile);
