@@ -39,38 +39,64 @@ int VTreeParser::parseNode(FILE *file, VTreeNode *node)
 	char *pPosition = strchr(m_buf, '{');
 	if(pPosition)
 	{
-		qtStrCpy(node, pPosition, pEnd);
+		*pEnd = 0;
+		checkErr = node->setStr(pPosition+1);
+		if(checkErr != SUCCESS)
+			return checkErr;
+
 		readFile(file);
 
 		pPosition = strchr(m_buf, '}');
 		if(!pPosition)
 		{
-			pPosition = strchr(m_buf, '(');
-			if(!pPosition)
-			{
-				node->createLeft();
-				parseNode(file, node->getLeft());
-			}
-			else
-				readFile(file);
-
-			readFile(file);
-			pPosition = strchr(m_buf, '(');
-			if(!pPosition)
-			{
-				node->createRight();
-				parseNode(file, node->getRight());
-			}
-			else
-				readFile(file);
-
-			readFile(file);
+			checkErr = parseChildren(file, node);
+			if(checkErr != SUCCESS)
+				return checkErr;
 		}
 
 		return SUCCESS;
 	}
 
 	return PARSE_ERR;
+}
+
+
+	
+int VTreeParser::parseChildren(FILE *file, VTreeNode *node)
+{
+	int checkErr;
+	char *pPosition = strchr(m_buf, '(');
+	if(!pPosition)
+	{
+		checkErr = node->createLeft();
+		if(checkErr != SUCCESS) 
+			return checkErr;
+
+		checkErr = parseNode(file, node->getLeft());
+		if(checkErr != SUCCESS)
+			return checkErr;
+	}
+	else
+		readFile(file);
+
+	readFile(file);
+	pPosition = strchr(m_buf, '(');
+	if(!pPosition)
+	{
+		checkErr = node->createRight();
+		if(checkErr != SUCCESS)
+			return checkErr;
+
+		checkErr = parseNode(file, node->getRight());
+		if(checkErr != SUCCESS)
+			return checkErr;
+	}
+	else
+		readFile(file);
+
+	readFile(file);
+
+	return SUCCESS;
 }
 
 
@@ -96,25 +122,3 @@ void VTreeParser::readFile(FILE *file)
 	fgets(m_buf, PARSER_BUF_SIZE, file);
 }
 
-
-void VTreeParser::qtStrCpy(VTreeNode *node, char *pPosition1, char *pPosition2)
-{
-	*pPosition2 = 0;
-	node->setStr(pPosition1+1);
-}
-
-
-/*
-void VTreeParser::tStrCpy(VTreeNode *node, char *pPosition)
-{
-	int len = strlen(pPosition)-2;
-	assert(len > 0);
-
-	char *newStr = new char[len+1]();
-	strncpy(newStr, pPosition+1, len);
-
-	node->setStr(newStr);
-
-	delete[] newStr;
-}
-*/

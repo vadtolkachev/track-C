@@ -16,8 +16,7 @@ public:
 
 	int createLeft();
 	int createRight();
-	
-	void setStr(const char *str);
+	int setStr(const char *str);
 
 private:
 	char *m_str;

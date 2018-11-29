@@ -62,12 +62,18 @@ int VTreeNode::createRight()
 }
 
 
-void VTreeNode::setStr(const char *str)
+int VTreeNode::setStr(const char *str)
 {
 	if(m_str)
 		delete[] m_str;
 
-	m_str = new char[strlen(str)+1]();
+	m_str = new (std::nothrow) char[strlen(str)+1]();
+	
+	if(!m_str)
+		return ALLOC_ERR;
+
 	strcpy(m_str, str);
+
+	return SUCCESS;
 }
 
