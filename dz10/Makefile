@@ -13,5 +13,5 @@ build: $(OBJFILES)
 clean_d:
 	rm -rf dump/* *.log
 
-clean:
+clean: clean_d
 	rm -rf a.out *.o VTree/*.o
