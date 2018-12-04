@@ -1,7 +1,8 @@
 #pragma once
+#include "defines.hpp"
 #include <string.h>
 #include <new>
-#include "defines.hpp"
+#include <stdio.h>
 
 
 enum VType : unsigned char
@@ -26,6 +27,7 @@ public:
 	int createLeft();
 	int createRight();
 	int setChar(const char &c);
+	int fprintData(FILE *file) const;
 	void setDouble(const double &numb);
 
 private:

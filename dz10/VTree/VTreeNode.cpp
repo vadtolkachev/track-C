@@ -87,6 +87,20 @@ int VTreeNode::setChar(const char &c)
 }
 
 
+int VTreeNode::fprintData(FILE *file) const
+{
+	if(!file)
+		return NULLPTR_ERR;
+
+	if(m_type == VNumb)
+		fprintf(file, "%lg", m_data);
+	else
+		fprintf(file, "%c", *((char *)(&m_data)));
+
+	return SUCCESS;
+}
+
+
 void VTreeNode::setDouble(const double &numb)
 {
 	m_data = numb;
