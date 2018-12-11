@@ -1,5 +1,6 @@
 #include "VTree.hpp"
 #include "VTreeParser.hpp"
+#include "VDerivator.hpp"
 
 
 VTree::VTree()
@@ -12,6 +13,7 @@ VTree::VTree()
 VTree::~VTree()
 {
 	freeMem(m_root);
+	m_root = nullptr;
 }
 
 
@@ -48,6 +50,71 @@ int VTree::setRoot(VTreeNode *node)
 
 	m_root = node;
 	return SUCCESS;
+}
+
+
+int VTree::copy(VTree *tree)
+{
+	if(!tree)
+		return NULLPTR_ERR;
+
+	if(m_root)
+		return OVERFLOW_ERR;
+
+	if(tree->getRoot())
+	{
+		int checkErr = createRoot();
+		CHECKERR();
+		checkErr = copyNode(tree->getRoot(), m_root);
+		return checkErr;
+	}
+
+	return SUCCESS;
+}
+
+
+int VTree::copyNode(VTreeNode *nodeFrom, VTreeNode *nodeTo)
+{
+	int checkErr;
+
+	VType type = nodeFrom->getType();
+
+	if(type == VFuncType)
+		nodeTo->setFunc(nodeFrom->getFunc());
+
+	if(type == VVarType)
+		nodeTo->setChar(nodeFrom->getChar());
+
+	if(type == VNumbType)
+		nodeTo->setDouble(nodeFrom->getDouble());
+
+	if(nodeFrom->getLeft())
+	{
+		checkErr = nodeTo->createLeft();
+		CHECKERR();
+		checkErr = copyNode(nodeFrom->getLeft(), nodeTo->getLeft());
+		CHECKERR();
+	}
+
+	if(nodeFrom->getRight())
+	{
+		checkErr = nodeTo->createRight();
+		CHECKERR();
+		checkErr = copyNode(nodeFrom->getRight(), nodeTo->getRight());
+		CHECKERR();
+	}
+
+
+	return SUCCESS;
+}
+
+
+int VTree::derivate()
+{
+	VDerivator derivator;
+	int checkErr = derivator.derivate(this);
+
+	return checkErr;
 }
 
 

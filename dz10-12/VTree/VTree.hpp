@@ -6,6 +6,9 @@
 #include <errno.h>
 
 
+#define CHECKERR() if(checkErr != SUCCESS) return checkErr
+
+
 class VTree
 {
 public:
@@ -16,6 +19,9 @@ public:
 	int checkError() const;
 	int createRoot();
 	int setRoot(VTreeNode *node);
+	int copy(VTree *tree);
+	int copyNode(VTreeNode *nodeFrom, VTreeNode *nodeTo);
+	int derivate();
 	
 	void dump(const char *file_name);
 	void dumpNode(const VTreeNode *node, FILE *dotfile);

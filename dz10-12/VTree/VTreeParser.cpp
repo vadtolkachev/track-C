@@ -4,9 +4,6 @@
 #include <ctype.h>
 
 
-#define CHECKERR if(checkErr != SUCCESS) return checkErr;
-
-
 VTreeParser::VTreeParser()
 {
 	m_buf = nullptr;
@@ -52,16 +49,16 @@ int VTreeParser::parseTree(const char *file_name, VTree *tree)
 		return OPEN_ERR;
 
 	int checkErr = readText(file);
-	CHECKERR;
+	CHECKERR();
 
 	if(tree->getRoot())
 		return OVERFLOW_ERR;
 
 	checkErr = tree->createRoot();
-	CHECKERR;
+	CHECKERR();
 
 	checkErr = parseNode(tree->getRoot());
-	CHECKERR;
+	CHECKERR();
 
 	fclose(file);
 	if(errno)
@@ -89,22 +86,22 @@ int VTreeParser::parseNode(VTreeNode *node)
 		if(strncmp(&m_buf[m_index], "(nil)", 5))
 		{
 			checkErr = node->createLeft();
-			CHECKERR;
+			CHECKERR();
 			checkErr = parseNode(node->getLeft());
-			CHECKERR;
+			CHECKERR();
 		}
 		else
 			m_index += 5;
 
 		checkErr = readNode(node);
-		CHECKERR;
+		CHECKERR();
 
 		if(strncmp(&m_buf[m_index], "(nil)", 5))
 		{
 			checkErr = node->createRight();
-			CHECKERR;
+			CHECKERR();
 			checkErr = parseNode(node->getRight());
-			CHECKERR;
+			CHECKERR();
 		}
 		else
 			m_index += 5;
@@ -112,7 +109,7 @@ int VTreeParser::parseNode(VTreeNode *node)
 	else
 	{
 		checkErr = readNode(node);
-		CHECKERR;
+		CHECKERR();
 	}
 
 	if(m_buf[m_index] != ')')
@@ -139,13 +136,13 @@ int VTreeParser::readNode(VTreeNode *node)
 		return checkErr;
 	}
 
-	#define FUNC_DEF(name, str, numb)			\
-	/*printf("str = %s; strlen = %lu\n", #str, strlen(#str));*/\
-	if(!strncmp(&m_buf[m_index], #str, strlen(#str)))	\
-	{							\
-		node->setFunc(F_##name);			\
-		m_index += strlen(#str);			\
-		return SUCCESS;					\
+	#define FUNC_DEF(name, str, numb)				\
+	/*printf("str = %s; strlen = %lu\n", #str, strlen(#str));*/	\
+	if(!strncmp(&m_buf[m_index], #str, strlen(#str)))		\
+	{								\
+		node->setFunc(F_##name);				\
+		m_index += strlen(#str);				\
+		return SUCCESS;						\
 	}
 
 	FUNCS_DEF;
