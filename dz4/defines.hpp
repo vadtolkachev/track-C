@@ -36,6 +36,7 @@ const int CLOSE_ERR = -18;
 const int PARSE_ERR = -19;
 const int TYPE_ERR = -20;
 const int OVERFLOW_ERR = -21;
+const int NOTNULLPTR_ERR = -22;
 
 
 const int S_BUF = 2;
