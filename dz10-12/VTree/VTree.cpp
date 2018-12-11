@@ -87,25 +87,14 @@ void VTree::dumpNode(const VTreeNode *node, FILE *dotfile)
 {
 	if(node)
 	{
-		fprintf(dotfile, "\t\"");
+		fprintf(dotfile, "\t%ld [label = \"", (long int)node);
 		node->fprintData(dotfile);
-		fprintf(dotfile, "\"\n");
+		fprintf(dotfile, "\"]\n");
+
 		if(node->getLeft())
-		{
-			fprintf(dotfile, "\t\"");
-			node->fprintData(dotfile);
-			fprintf(dotfile, "\"->\"");
-			node->getLeft()->fprintData(dotfile);
-			fprintf(dotfile, "\"\n");
-		}
+			fprintf(dotfile, "\t%ld->%ld\n", (long int)node, (long int)node->getLeft());
 		if(node->getRight())
-		{
-			fprintf(dotfile, "\t\"");
-			node->fprintData(dotfile);
-			fprintf(dotfile, "\"->\"");
-			node->getRight()->fprintData(dotfile);
-			fprintf(dotfile, "\"\n");
-		}
+			fprintf(dotfile, "\t%ld->%ld\n", (long int)node, (long int)node->getRight());
 
 		dumpNode(node->getLeft(), dotfile);
 		dumpNode(node->getRight(), dotfile);
@@ -128,7 +117,7 @@ void VTree::pdump(const char *file_name)
 		return;
 	}
 
-	fprintf(dotfile, "digraph G\n{\n");
+	fprintf(dotfile, "digraph structs\n{\nnode [shape=record];\n");
 	pdumpNode(m_root, dotfile);
 	fprintf(dotfile, "}");
 
@@ -149,25 +138,16 @@ void VTree::pdumpNode(const VTreeNode *node, FILE *dotfile)
 {
 	if(node)
 	{
-		fprintf(dotfile, "\t\"");
-		node->fprintData(dotfile);		
-		fprintf(dotfile, " [%p]\"\n", node);
+		fprintf(dotfile, "\t%ld [label = \"{%p|{", (long int)node, node);
+		node->fprintData(dotfile);
+		fprintf(dotfile, "|");
+		node->fprintType(dotfile);
+		fprintf(dotfile, "}}\"];\n");
+
 		if(node->getLeft())
-		{
-			fprintf(dotfile, "\t\"");
-			node->fprintData(dotfile);
-			fprintf(dotfile, " [%p]\"->\"", node);
-			node->getLeft()->fprintData(dotfile);
-			fprintf(dotfile, " [%p]\"\n", node->getLeft());
-		}
+			fprintf(dotfile, "\t%ld->%ld [label = \"left\"]\n", (long int)node, (long int)node->getLeft());
 		if(node->getRight())
-		{
-			fprintf(dotfile, "\t\"");
-			node->fprintData(dotfile);
-			fprintf(dotfile, " [%p]\"->\"", node);
-			node->getRight()->fprintData(dotfile);
-			fprintf(dotfile, " [%p]\"\n", node->getRight());
-		}
+			fprintf(dotfile, "\t%ld->%ld [label = \"right\"]\n", (long int)node, (long int)node->getRight());
 
 		pdumpNode(node->getLeft(), dotfile);
 		pdumpNode(node->getRight(), dotfile);
@@ -205,21 +185,24 @@ void VTree::tdumpNode(FILE *file, const VTreeNode *node)
 {
 	if(!node)
 	{
-		fprintf(file, "(nil)\n");
+		fprintf(file, "(nil)");
 		return;
 	}
 	
+	fprintf(file, "(");
 
 	if(node->getLeft() || node->getRight())
 	{
-		fprintf(file, "(");
+
 		tdumpNode(file, node->getLeft());
 		node->fprintData(file);
 		tdumpNode(file, node->getRight());
-		fprintf(file, ")");
+
 	}
 	else
 		node->fprintData(file);
+	
+	fprintf(file, ")");
 }
 
 

@@ -1,6 +1,6 @@
 CPP=g++
 CPPFLAGS=-Wall -Wextra -iquote ../dz4 -iquote VTree
-OBJFILES=main.o VTree/VTree.o VTree/VTreeParser.o VTree/VTreeNode.o
+OBJFILES=test1.o VTree/VTree.o VTree/VTreeParser.o VTree/VTreeNode.o
 
 all: clean_d build
 

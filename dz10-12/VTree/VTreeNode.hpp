@@ -1,5 +1,6 @@
 #pragma once
 #include "defines.hpp"
+#include "FuncDef.hpp"
 #include <string.h>
 #include <new>
 #include <stdio.h>
@@ -7,10 +8,20 @@
 
 enum VType : unsigned char
 {
-	VSign,
-	VVar,
-	VNumb
+	VFuncType,
+	VVarType,
+	VNumbType
 };
+
+
+#define FUNC_DEF(name, str, numb) F_##name = numb,
+
+enum VFunc : unsigned char
+{
+	FUNCS_DEF
+};
+
+#undef FUNC_DEF
 
 
 class VTreeNode
@@ -19,15 +30,19 @@ public:
 	VTreeNode();
 
 	VType getType() const;
-	double getDouble() const;
-	char getChar() const;
 	VTreeNode *getLeft() const;
 	VTreeNode *getRight() const;
-
+	VFunc getFunc() const;
+	double getDouble() const;
+	char getChar() const;
+	
 	int createLeft();
 	int createRight();
 	int setChar(const char &c);
 	int fprintData(FILE *file) const;
+	int fprintType(FILE *file) const;
+
+	void setFunc(VFunc func);
 	void setDouble(const double &numb);
 
 private:
