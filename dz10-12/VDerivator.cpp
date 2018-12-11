@@ -25,7 +25,7 @@ int VDerivator::derivate(VTree *oldTree, VTree *newTree)
 		return NULLPTR_ERR;
 
 	if(newTree->getRoot())
-		return OVERFLOW_ERR;
+		return NOTNULLPTR_ERR;
 
 	int checkErr = newTree->createRoot();
 	CHECKERR();
@@ -39,19 +39,39 @@ int VDerivator::derivate(VTree *oldTree, VTree *newTree)
 int VDerivator::derivateNode(VTreeNode *oldNode, VTreeNode *newNode)
 {
 	if(oldNode->getType() == VNumbType)
+	{
+		if(oldNode->getLeft() || oldNode->getRight())
+			return NOTNULLPTR_ERR;
+
 		newNode->setDouble(0);
+	}
+
+	if(oldNode->getType() == VVarType)
+	{
+		if(oldNode->getLeft() || oldNode->getRight())
+			return NOTNULLPTR_ERR;
+
+		newNode->setDouble(1);
+	}
+
+	int checkErr;
+
+	if(oldNode->getType() == VFuncType)
+	{
+		if(!oldNode->getLeft())
+			return NULLPTR_ERR;
+		
+
+		#define FUNC_DEF(name, str, numb, der_code)	\
+		if(oldNode->getFunc() == F_##name) 		\
+			der_code;
+
+		FUNCS_DEF;
+
+		#undef FUNC_DEF
+	}
+
 
 	return SUCCESS;
 }
 
-
-VTree *VDerivator::getTree() const
-{
-	return m_tree;
-}
-
-
-void VDerivator::setTree(VTree *tree)
-{
-	m_tree = tree;
-}

@@ -65,45 +65,9 @@ int VTree::copy(VTree *tree)
 	{
 		int checkErr = createRoot();
 		CHECKERR();
-		checkErr = copyNode(tree->getRoot(), m_root);
+		checkErr = m_root->copy(tree->getRoot());
 		return checkErr;
 	}
-
-	return SUCCESS;
-}
-
-
-int VTree::copyNode(VTreeNode *nodeFrom, VTreeNode *nodeTo)
-{
-	int checkErr;
-
-	VType type = nodeFrom->getType();
-
-	if(type == VFuncType)
-		nodeTo->setFunc(nodeFrom->getFunc());
-
-	if(type == VVarType)
-		nodeTo->setChar(nodeFrom->getChar());
-
-	if(type == VNumbType)
-		nodeTo->setDouble(nodeFrom->getDouble());
-
-	if(nodeFrom->getLeft())
-	{
-		checkErr = nodeTo->createLeft();
-		CHECKERR();
-		checkErr = copyNode(nodeFrom->getLeft(), nodeTo->getLeft());
-		CHECKERR();
-	}
-
-	if(nodeFrom->getRight())
-	{
-		checkErr = nodeTo->createRight();
-		CHECKERR();
-		checkErr = copyNode(nodeFrom->getRight(), nodeTo->getRight());
-		CHECKERR();
-	}
-
 
 	return SUCCESS;
 }

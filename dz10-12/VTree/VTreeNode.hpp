@@ -6,6 +6,9 @@
 #include <stdio.h>
 
 
+#define CHECKERR() if(checkErr != SUCCESS) return checkErr
+
+
 enum VType : unsigned char
 {
 	VFuncType,
@@ -14,7 +17,7 @@ enum VType : unsigned char
 };
 
 
-#define FUNC_DEF(name, str, numb) F_##name = numb,
+#define FUNC_DEF(name, str, numb, der_code) F_##name = numb,
 
 enum VFunc : unsigned char
 {
@@ -41,6 +44,8 @@ public:
 	int setChar(const char &c);
 	int fprintData(FILE *file) const;
 	int fprintType(FILE *file) const;
+	int copy(VTreeNode *node);
+	int copyNode(VTreeNode *nodeFrom, VTreeNode *nodeTo);
 
 	void setFunc(VFunc func);
 	void setDouble(const double &numb);

@@ -98,8 +98,8 @@ int VTreeNode::fprintData(FILE *file) const
 		fprintf(file, "%c", *((char *)(&m_data)));
 	else
 	{
-		#define FUNC_DEF(name, str, numb)	\
-		if(getFunc() == numb)			\
+		#define FUNC_DEF(name, str, numb, der_code)	\
+		if(getFunc() == numb)				\
 			fprintf(file, "%s", #str);
 
 		FUNCS_DEF;
@@ -122,6 +122,53 @@ int VTreeNode::fprintType(FILE *file) const
 		fprintf(file, "VVarType");
 	else
 		fprintf(file, "VFuncType");
+
+	return SUCCESS;
+}
+
+
+int VTreeNode::copy(VTreeNode *node)
+{
+	if(!node)
+		return NULLPTR_ERR;
+
+
+	int checkErr = copyNode(node, this);
+	return checkErr;
+}
+
+
+int VTreeNode::copyNode(VTreeNode *nodeFrom, VTreeNode *nodeTo)
+{
+	int checkErr;
+
+	VType type = nodeFrom->getType();
+
+	if(type == VFuncType)
+		nodeTo->setFunc(nodeFrom->getFunc());
+
+	if(type == VVarType)
+		nodeTo->setChar(nodeFrom->getChar());
+
+	if(type == VNumbType)
+		nodeTo->setDouble(nodeFrom->getDouble());
+
+	if(nodeFrom->getLeft())
+	{
+		checkErr = nodeTo->createLeft();
+		CHECKERR();
+		checkErr = copyNode(nodeFrom->getLeft(), nodeTo->getLeft());
+		CHECKERR();
+	}
+
+	if(nodeFrom->getRight())
+	{
+		checkErr = nodeTo->createRight();
+		CHECKERR();
+		checkErr = copyNode(nodeFrom->getRight(), nodeTo->getRight());
+		CHECKERR();
+	}
+
 
 	return SUCCESS;
 }

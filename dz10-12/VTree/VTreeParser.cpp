@@ -136,7 +136,7 @@ int VTreeParser::readNode(VTreeNode *node)
 		return checkErr;
 	}
 
-	#define FUNC_DEF(name, str, numb)				\
+	#define FUNC_DEF(name, str, numb, der_code)			\
 	/*printf("str = %s; strlen = %lu\n", #str, strlen(#str));*/	\
 	if(!strncmp(&m_buf[m_index], #str, strlen(#str)))		\
 	{								\

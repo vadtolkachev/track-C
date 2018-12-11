@@ -2,6 +2,13 @@
 #include <stdio.h>
 
 
+#define TCHECK(str)			\
+{					\
+	checkErr = tree.checkError(); 	\
+	if(checkErr != SUCCESS) 	\
+		exitErr(str);		\
+}
+
 void exitErr(const char *str)
 {
 	printf("Exit with error: %s\n", str);
@@ -11,26 +18,39 @@ void exitErr(const char *str)
 
 int main()
 {
+	int checkErr;
 	VTree tree;
 	tree.createRoot();
-	tree.getRoot()->setDouble(123);
 
-	int checkErr;
+	tree.getRoot()->setFunc(F_POW);
+	tree.getRoot()->createLeft();
+	tree.getRoot()->createRight();
+	tree.getRoot()->getLeft()->setDouble(2);
+	tree.getRoot()->getRight()->setFunc(F_MUL);
+	tree.getRoot()->getRight()->createLeft();
+	tree.getRoot()->getRight()->createRight();
+	tree.getRoot()->getRight()->getLeft()->setChar('x');
+	tree.getRoot()->getRight()->getRight()->setChar('x');
+
+	/*tree.getRoot()->setFunc(F_DIV);
+	tree.getRoot()->createLeft();
+	tree.getRoot()->getLeft()->setChar('y');
+	tree.getRoot()->createRight();
+	tree.getRoot()->getRight()->createRight();
+	tree.getRoot()->getRight()->createLeft();
+	tree.getRoot()->getRight()->setFunc(F_ADD);
+	tree.getRoot()->getRight()->getLeft()->setChar('x');
+	tree.getRoot()->getRight()->getRight()->setDouble(45);*/
+
 
 	tree.dump("dump/tree.dot");
-	checkErr = tree.checkError();
-	if(checkErr != SUCCESS)
-		exitErr("dump");
+	TCHECK("dump");
 
 	tree.pdump("dump/ptree.dot");
-	checkErr = tree.checkError();
-	if(checkErr != SUCCESS)
-		exitErr("pdump");
+	TCHECK("pdump");
 
 	tree.tdump("dump/tree.txt");
-	checkErr = tree.checkError();
-	if(checkErr != SUCCESS)
-		exitErr("tdump");
+	TCHECK("tdump");
 	
 	checkErr = tree.derivate();
 	if(checkErr != SUCCESS)
@@ -40,19 +60,13 @@ int main()
 	}
 
 	tree.dump("dump/tree2.dot");
-	checkErr = tree.checkError();
-	if(checkErr != SUCCESS)
-		exitErr("dump2");
+	TCHECK("dump2");
 
 	tree.pdump("dump/ptree2.dot");
-	checkErr = tree.checkError();
-	if(checkErr != SUCCESS)
-		exitErr("pdump2");
+	TCHECK("pdump2");
 
 	tree.tdump("dump/tree2.txt");
-	checkErr = tree.checkError();
-	if(checkErr != SUCCESS)
-		exitErr("tdump2");
+	TCHECK("tdump2");
 
 
 	return 0;
