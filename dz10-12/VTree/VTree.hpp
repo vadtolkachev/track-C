@@ -18,7 +18,11 @@ public:
 	int setRoot(VTreeNode *node);
 	int copy(VTree *tree);
 	int derivate();
-	
+	int derivate(const char *file_name);
+
+	int dumpTex(const char *file_name);
+	int dumpNodeTex(FILE *file, const VTreeNode *node);
+
 	void dump(const char *file_name);
 	void dumpNode(const VTreeNode *node, FILE *dotfile);
 

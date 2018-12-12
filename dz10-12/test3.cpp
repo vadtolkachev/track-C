@@ -26,11 +26,11 @@ int main()
 	tree.getRoot()->createLeft();
 	tree.getRoot()->createRight();
 	tree.getRoot()->getLeft()->setDouble(2);
-	tree.getRoot()->getRight()->setFunc(F_MUL);
+	tree.getRoot()->getRight()->setFunc(F_CTG);
 	tree.getRoot()->getRight()->createLeft();
-	tree.getRoot()->getRight()->createRight();
+	//tree.getRoot()->getRight()->createRight();
 	tree.getRoot()->getRight()->getLeft()->setChar('x');
-	tree.getRoot()->getRight()->getRight()->setChar('x');
+	//tree.getRoot()->getRight()->getRight()->setChar('x');
 
 	/*tree.getRoot()->setFunc(F_DIV);
 	tree.getRoot()->createLeft();
@@ -51,8 +51,15 @@ int main()
 
 	tree.tdump("dump/tree.txt");
 	TCHECK("tdump");
+
+	checkErr = tree.dumpTex("dump/treeTex.txt");
+	if(checkErr != SUCCESS)
+	{
+		printf("err = %d\n", checkErr);
+		exitErr("dumpTex");
+	}
 	
-	checkErr = tree.derivate();
+	checkErr = tree.derivate("dump/treeTex3.txt");
 	if(checkErr != SUCCESS)
 	{
 		printf("err: %d\n", checkErr);
@@ -68,6 +75,12 @@ int main()
 	tree.tdump("dump/tree2.txt");
 	TCHECK("tdump2");
 
+	checkErr = tree.dumpTex("dump/treeTex2.txt");
+	if(checkErr != SUCCESS)
+	{
+		printf("err = %d\n", checkErr);
+		exitErr("dumpTex2");
+	}
 
 	return 0;
 }

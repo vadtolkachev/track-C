@@ -82,6 +82,173 @@ int VTree::derivate()
 }
 
 
+int VTree::derivate(const char *file_name)
+{
+	VDerivator derivator;
+	int checkErr = derivator.derivate(this, file_name);
+
+	return checkErr;
+}
+
+
+int VTree::dumpTex(const char *file_name)
+{
+	if(!file_name)
+		return NULLPTR_ERR;
+
+	FILE *file = fopen(file_name, "w");
+	if(errno)
+		return OPEN_ERR;
+
+	fprintf(file, "$");
+	int checkErr = dumpNodeTex(file, m_root);
+	CHECKERR();
+	fprintf(file, "$");
+
+	fclose(file);
+	if(errno)
+		return CLOSE_ERR;
+
+	return SUCCESS;
+}
+
+
+int VTree::dumpNodeTex(FILE *file, const VTreeNode *node)
+{
+	if(!node)
+		return SUCCESS;
+
+	if(node->getType() == VNumbType)
+	{
+		if(node->getLeft() || node->getRight())
+			return NOTNULLPTR_ERR;
+		if(node->getDouble() < 0)
+			fprintf(file, "(");
+		node->fprintData(file);
+		if(node->getDouble() < 0)
+			fprintf(file, ")");
+	}
+	else if(node->getType() == VFuncType)
+	{
+		char func = node->getFunc();
+		if(func == F_ADD || func == F_SUB)
+		{
+			if(node != m_root)
+				fprintf(file, "(");
+
+			if(node->getLeft())
+				dumpNodeTex(file, node->getLeft());
+
+			node->fprintData(file);
+
+			if(node->getRight())
+				dumpNodeTex(file, node->getRight());
+
+			if(node != m_root)	
+				fprintf(file, ")");
+		}
+		else if(func == F_LOG)
+		{
+			//TODO
+			if(node != m_root)
+				fprintf(file, "(");
+
+			if(node->getLeft())
+				dumpNodeTex(file, node->getLeft());
+
+			fprintf(file, "(");
+			node->fprintData(file);
+			fprintf(file, ")");
+
+			if(node->getRight())
+				dumpNodeTex(file, node->getRight());
+
+			if(node != m_root)	
+				fprintf(file, ")");
+		}
+		else if(func == F_LN || func == F_SIN || func == F_COS || func == F_TG ||  func == F_CTG)
+		{
+			node->fprintData(file);
+
+			fprintf(file, "(");
+			if(node->getLeft())
+				dumpNodeTex(file, node->getLeft());
+			fprintf(file, ")");		
+		}
+		else if(func == F_MUL)
+		{
+			if(node->getLeft())
+				dumpNodeTex(file, node->getLeft());
+
+			if(func == F_MUL)
+				fprintf(file, " \\cdot ");
+			else
+				node->fprintData(file);
+
+			if(node->getRight())
+				dumpNodeTex(file, node->getRight());
+		}
+		else if(func == F_POW)
+		{
+			if(node->getLeft()->getType() == VFuncType)
+				fprintf(file, "(");
+
+			if(node->getLeft())
+				dumpNodeTex(file, node->getLeft());
+
+			if(node->getLeft()->getType() == VFuncType)
+				fprintf(file, ")");
+
+			node->fprintData(file);
+
+			fprintf(file, "{");
+			if(node->getRight())
+				dumpNodeTex(file, node->getRight());
+			fprintf(file, "}");		
+		}
+		else if(func == F_EXP)
+		{
+			fprintf(file, "e^{");
+			if(node->getLeft())
+				dumpNodeTex(file, node->getLeft());
+			fprintf(file, "}");		
+		}
+		else if(func == F_DIV)
+		{
+			fprintf(file, "\\frac{");			
+			
+			if(node->getLeft())
+				dumpNodeTex(file, node->getLeft());
+
+			fprintf(file, "}{");	
+			if(node->getRight())
+				dumpNodeTex(file, node->getRight());
+			fprintf(file, "}");
+		}
+		else
+		{
+			node->fprintData(file);
+
+			if(node->getLeft())
+				dumpNodeTex(file, node->getLeft());
+		}
+	}
+	else
+	{
+		if(node->getLeft())
+			dumpNodeTex(file, node->getLeft());
+
+		node->fprintData(file);
+
+		if(node->getRight())
+			dumpNodeTex(file, node->getRight());
+	}
+
+
+	return SUCCESS;
+}
+
+
 void VTree::dump(const char *file_name)
 {
 	if(!file_name)

@@ -1,6 +1,34 @@
 #include "VDerivator.hpp"
 
 
+int VDerivator::derivate(VTree *tree, const char *file_name)
+{
+	if(!file_name)
+		return NULLPTR_ERR;
+
+	FILE *file = fopen(file_name, "w");
+	if(errno)
+		return OPEN_ERR;
+
+	fprintf(file, "$(");
+	int checkErr = tree->dumpNodeTex(file, tree->getRoot());
+	CHECKERR();
+	fprintf(file, ")' = ");
+	checkErr = tree->derivate();
+	CHECKERR();
+
+	checkErr = tree->dumpNodeTex(file, tree->getRoot());
+	CHECKERR();
+	fprintf(file, "$");
+
+	fclose(file);
+	if(errno)
+		return CLOSE_ERR;
+
+	return SUCCESS;
+}
+
+
 int VDerivator::derivate(VTree *tree)
 {
 	if(!tree || !tree->getRoot())

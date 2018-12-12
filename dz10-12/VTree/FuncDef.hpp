@@ -423,7 +423,7 @@
 	D_FUNC_DEF(CTG, ctg, 8)		\
 	D_FUNC_DEF(SQRT, sqrt, 9)	\
 	D_FUNC_DEF(POW, ^, 10)		\
-	D_FUNC_DEF(EXP, exp, 11) 	\
+	D_FUNC_DEF(EXP, e^, 11) 	\
 	D_FUNC_DEF(LOG, log, 12) 	\
 	D_FUNC_DEF(LN, ln, 13)
 
