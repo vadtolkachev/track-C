@@ -1,5 +1,5 @@
-CPP=g++ -g -MD
-CPPFLAGS=-Wall -Wextra -iquote ../dz4 -iquote VTree -iquote .
+CPP=g++
+CPPFLAGS=-Wall -Wextra -g -MD -iquote ../dz4 -iquote VTree -iquote .
 OBJFILES=test4.o VDerivator.o VTree/VTree.o VTree/VTreeParser.o VTree/VTreeNode.o
 
 all: test.x
