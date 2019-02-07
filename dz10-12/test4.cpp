@@ -50,6 +50,7 @@ int main()
 		exitErr("derivate");
 	}
 
+	
 	tree.dump("dump/tree2.dot");
 	TCHECK("dump2");
 

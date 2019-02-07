@@ -5,4 +5,5 @@ covinfo
 *gcno
 *.log
 *.o
+*.d
 *.out

@@ -1,11 +1,11 @@
-CPP=g++
+CPP=g++ -g -MD
 CPPFLAGS=-Wall -Wextra -iquote ../dz4 -iquote VTree -iquote .
 OBJFILES=test4.o VDerivator.o VTree/VTree.o VTree/VTreeParser.o VTree/VTreeNode.o
 
-all: clean_d build
+all: test.x
 
-build: $(OBJFILES)
-	$(CPP) $(CPPFLAGS) -o a.out $(OBJFILES)
+test.x: $(OBJFILES)
+	$(CPP) $(CPPFLAGS) -o test.x $(OBJFILES)
 
 %.o: %.cpp
 	$(CPP) $(CPPFLAGS) -o $@ -c $<
@@ -14,4 +14,6 @@ clean_d:
 	rm -rf dump/* *.log
 
 clean: clean_d
-	rm -rf a.out *.o VTree/*.o
+	rm -rf test.x *.o VTree/*.o *.d VTree/*.d
+
+-include *.d
